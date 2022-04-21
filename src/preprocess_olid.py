@@ -1,8 +1,14 @@
 """
     Module for pre-processing OLID dataset (Task A)
+    
+    To use as a script, execute:
+        python3 preprocess_olid.py --file FILE [--lang LANG] 
+        [--train_ids TRAIN_IDS --dev_ids DEV_IDS]
+    
 """
 
 import argparse
+import re
 
 import pandas as pd
 
@@ -15,7 +21,7 @@ NOT = "NOT"
 # define types
 Example = {"content":str, "label":int}
 
-def preprocess(file: str, lang: str="english") -> list:
+def preprocess(data: pd.DataFrame, lang: str="english") -> list:
     """
     Converts OLID-formatted file into a list of datapoints.
 
@@ -65,6 +71,36 @@ def write_file(data: list, out_file: str) -> None:
         file.write(f"{line['content']}\t{line['label']}\n")
         
     file.close()
+    
+def split_data(data: pd.DataFrame, train_ids_file: str, 
+               dev_ids_file: str) -> [pd.DataFrame, pd.DataFrame]:
+    """
+    Splits canonical training data into train and dev
+
+    Parameters
+    ----------
+    data : pd.DataFrame
+        OLID data, must include 'id' field
+    train_ids_file : str
+        line-separated file containing ids corresponding to training set
+    dev_ids_file : str
+        line-separated file containing ids corresponding to dev set
+
+    Returns
+    -------
+    train_set : pd.DataFrame
+    test_set : pd.DataFrame
+
+    """
+    train_ids = pd.Index([int(n) for n in 
+                     open(train_ids_file).readlines()])
+    dev_ids = pd.Index([int(n) for n in 
+                   open(dev_ids_file).readlines()])
+    
+    train_set = data.loc[train_ids]
+    dev_set = data.loc[dev_ids]
+    
+    return(train_set, dev_set)
         
 if __name__ == "__main__":
     
@@ -77,16 +113,32 @@ if __name__ == "__main__":
         choices=["english", "arabic", "danish","greek", "turkish"],
         help="language of data")
     parser.add_argument(
-        "--out_file", default=None, help="path to output file")
+        "--train_ids", default=None, 
+        help="path to file containing IDs for training set (line-separated)")
+    parser.add_argument(
+        "--dev_ids", default=None, 
+        help="path to file containing IDs for development set (line-separated)")
     
     args = parser.parse_args(argv[1:])
-    file = args.file
     lang = args.language
     
-    if args.out_file == None:
-        out_file = f"preprocessed_{file}"
-    else:
-        out_file = args.out_file
+    file = args.file
+    file_ending = re.search(r"([^//]*)$", args.file).groups()[0]
     
-    data = preprocess(file=file, lang=lang)
-    write_file(data, out_file)
+    data = pd.read_csv(file, sep="\t", header=0, encoding="utf8")
+    
+    # split data if specified
+    if args.train_ids != None:
+        train_ids = args.train_ids
+        dev_ids = args.dev_ids
+        train, dev = split_data(data, train_ids, dev_ids)
+        
+        train_preprocessed = preprocess(train, lang)
+        dev_preprocessed = preprocess(dev, lang)
+        
+        write_file(train_preprocessed, f"pp_train_{file_ending}")
+        write_file(dev_preprocessed, f"pp_dev_{file_ending}")
+        
+    else:
+        train = preprocess(data, lang)
+        write_file(train, f"pp_{file_ending}")
