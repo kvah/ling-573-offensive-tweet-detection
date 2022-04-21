@@ -14,7 +14,8 @@ def get_labels(indices_path: str, tweets: pd.DataFrame) -> np.ndarray:
     """
     Purpose: Get true labels from preprocessed data
     Input: [indices_path]: file path to indices file (str)
-    Output: true labels (array)
+           [tweets]: pandas dataframe that stores the tweets (pd.DataFrame)
+    Output: true labels (np.ndarray)
     """
     tweets = df_from_indices(indices_path, tweets)
     return tweets['label'].values
