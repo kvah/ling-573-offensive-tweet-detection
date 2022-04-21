@@ -6,7 +6,7 @@ import argparse
 import numpy as np
 import pandas as pd
 from sklearn.linear_model import LogisticRegression
-from sklearn.metrics import classification_report, confusion_matrix, accuracy_score
+from sklearn.metrics import f1_score
 from utils import df_from_indices
 
 
@@ -46,15 +46,9 @@ if __name__ == "__main__":
     # build classifier with logistic regression algorithm
     classifier = LogisticRegression(max_iter=1000, class_weight="balenced").fit(train_vec, train_true_labels)
     
-    # classify validation dataset and print out results/report
+    # classify validation dataset and print out macro f1-score
     val_pred_labels = classifier.predict(val_vec)
 
-    print("Confusion Matrix")
-    print(confusion_matrix(val_true_labels, val_pred_labels))
-    print()
-    print("Accuracy")
-    print(accuracy_score(val_true_labels, val_pred_labels))
-    print()
-    print("Report")
-    print(classification_report(val_true_labels, val_pred_labels))
+    print("macro f1-score")
+    print(f1_score(val_true_labels, val_pred_labels), average="macro")
 
