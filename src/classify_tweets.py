@@ -50,5 +50,5 @@ if __name__ == "__main__":
     val_pred_labels = classifier.predict(val_vec)
 
     print("macro f1-score")
-    print(f1_score(val_true_labels, val_pred_labels), average="macro")
+    print(f1_score(val_true_labels, val_pred_labels, average="macro"))
 
