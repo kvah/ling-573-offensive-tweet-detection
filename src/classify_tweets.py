@@ -29,6 +29,8 @@ if __name__ == "__main__":
     parser.add_argument("--val_indices", type=str, required=True)
     parser.add_argument("--train_vectors", type=str, required=True)
     parser.add_argument("--val_vectors", type=str, required=True)
+    parser.add_argument("--preds_path", type=str, required=False)
+    parser.add_argument("--true_labels_path", type=str, required=False)
 
     args = parser.parse_args(sys.argv[1:])
 
@@ -48,6 +50,9 @@ if __name__ == "__main__":
     
     # classify validation dataset and print out macro f1-score
     val_pred_labels = classifier.predict(val_vec)
+    if args.preds_path and args.true_labels_path:
+        np.save(args.preds_path, val_pred_labels)
+        np.save(args.true_labels_path, val_true_labels)
 
     print("macro f1-score")
     print(f1_score(val_true_labels, val_pred_labels, average="macro"))
