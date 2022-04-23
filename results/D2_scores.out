@@ -1,2 +1,7 @@
 macro f1-score
 0.5980265654648956
+confusion matrix
+           predicted label
+true label negative    positive
+negative   667         210
+positive   254         193
