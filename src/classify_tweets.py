@@ -51,4 +51,26 @@ if __name__ == "__main__":
 
     print("macro f1-score")
     print(f1_score(val_true_labels, val_pred_labels, average="macro"))
+    
+    # build and print confusion matrix
+    tp = 0
+    tn = 0
+    fp = 0
+    fn = 0
+    for a in range(len(val_pred_labels)):
+        if val_pred_labels[a] == 1 and val_true_labels[a] == 1:
+            tp += 1
+        if val_pred_labels[a] == 1 and val_true_labels[a] == 0:
+            fp += 1
+        if val_pred_labels[a] == 0 and val_true_labels[a] == 0:
+            tn += 1
+        if val_pred_labels[a] == 0 and val_true_labels[a] == 1:
+            fn += 1
+    print("confusion matrix")
+    confusionmatrix = ""
+    confusionmatrix += "           predicted label\n"
+    confusionmatrix += "true label negative    positive\n"
+    confusionmatrix += "negative   "+str(tn)+"         "+str(fp)+"\n"
+    confusionmatrix += "positive   "+str(fn)+"         "+str(tp)+"\n"
+    print(confusionmatrix)
 
