@@ -19,7 +19,7 @@ Then, convert it to Word2Vec format so it can be loaded to Gensim:
 python -m gensim.scripts.glove2word2vec --input data/glove.twitter.27B.200d.txt --output data/glove.twitter.27B.200d.w2vformat.txt
 ```
 
-### 2. Install and activate the Conda Environment
+### 2. Create the conda environment
 
 ``` 
 conda env create -f env.yml --prefix env
