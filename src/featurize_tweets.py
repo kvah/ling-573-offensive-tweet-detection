@@ -49,8 +49,8 @@ if __name__ == "__main__":
     parser.add_argument("--val_indices", type=str, required=True)
     parser.add_argument("--embedding_path", type=str, required=True)
     parser.add_argument("--embedding_size", type=int, required=True)
-    parser.add_argument("--train_vectors", type=str, default='train_vectors.npy')
-    parser.add_argument("--val_vectors", type=str, default='val_vectors.npy')
+    parser.add_argument("--train_vectors", type=str, default='data/train_vectors.npy')
+    parser.add_argument("--val_vectors", type=str, default='data/val_vectors.npy')
 
     args = parser.parse_args(sys.argv[1:])
 
