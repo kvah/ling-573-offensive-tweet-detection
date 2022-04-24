@@ -13,8 +13,6 @@ wget https://repo.anaconda.com/archive/Anaconda3-2021.11-Linux-x86_64.sh
 sh Anaconda3-2021.11-Linux-x86_64.sh
 ```
 
-Download the [OLID (2019) dataset](https://sites.google.com/site/offensevalsharedtask/olid) and place `olid-training-v1.0.tsv` in `data/`
-
 Download the [pre-trained Twitter Glove2Vec Embeddings](https://nlp.stanford.edu/projects/glove/) and place `glove.twitter.27B.200d.txt` in `data/`. 
 Then, convert it to Word2Vec format so it can be loaded to Gensim:
 ```
