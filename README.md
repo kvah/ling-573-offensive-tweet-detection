@@ -1,8 +1,17 @@
 # ling-573-group-repo
+An end-to-end system for classifying English tweets as offensive or non-offensive, based on the [OffensEval 2019 Shared Task](https://sites.google.com/site/offensevalsharedtask/offenseval2019) (subtask A).
+
+In the current version, we use concatenated GloVe embeddings pre-trained on Twitter data as sentence representations, and classify using logistic regression. 
 
 ## Instructions
 
 ### 1. Prerequisites
+
+If necessary, download and install anaconda by running the following commands:
+```
+wget https://repo.anaconda.com/archive/Anaconda3-2021.11-Linux-x86_64.sh
+sh Anaconda3-2021.11-Linux-x86_64.sh
+```
 
 Download the [OLID (2019) dataset](https://sites.google.com/site/offensevalsharedtask/olid) and place `olid-training-v1.0.tsv` in `data/`
 
@@ -24,3 +33,11 @@ conda activate 573
 ```
 conda_submit D2.cmd
 ```
+
+This script does the following:
+
+1. Pre-processes OLID data and splits it into train and validation sets.
+2. Converts GloVe embeddings to w2v format.
+3. Converts tweets into feature vectors by concatenating pre-trained embeddings.
+4. Trains logistic regression classifier on train set.
+5. Evaluates classifier on validation set and outputs results.
