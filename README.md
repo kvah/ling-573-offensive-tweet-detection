@@ -22,8 +22,7 @@ python -m gensim.scripts.glove2word2vec --input data/glove.twitter.27B.200d.txt 
 ### 2. Install and activate the Conda Environment
 
 ``` 
-conda env create -f env.yml
-conda activate 573
+conda env create -f env.yml --prefix env
 ```
 
 ### 3. Run the conda script
