@@ -46,7 +46,7 @@ if __name__ == "__main__":
     val_vec = np.load(args.val_vectors)
 
     # build classifier with logistic regression algorithm
-    classifier = LogisticRegression(max_iter=1000, class_weight="balenced").fit(train_vec, train_true_labels)
+    classifier = LogisticRegression(max_iter=1000, class_weight="balanced").fit(train_vec, train_true_labels)
     
     # classify validation dataset and print out macro f1-score
     val_pred_labels = classifier.predict(val_vec)

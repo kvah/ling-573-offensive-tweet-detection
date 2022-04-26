@@ -1,5 +1,8 @@
 #!/bin/sh
 
+source ~/anaconda3/etc/profile.d/conda.sh
+conda activate ./env
+
 # Preprocess tweets
 python3 src/preprocess_olid.py \
     --file data/olid-training-v1.0.tsv
