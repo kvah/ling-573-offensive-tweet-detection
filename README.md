@@ -25,10 +25,10 @@ python -m gensim.scripts.glove2word2vec --input data/glove.twitter.27B.200d.txt 
 conda env create -f env.yml --prefix env
 ```
 
-### 3. Run the conda script
+### 3. Run the condor script
 
 ```
-conda_submit D2.cmd
+condor_submit D2.cmd
 ```
 
 This script does the following:
