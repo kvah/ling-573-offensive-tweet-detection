@@ -53,7 +53,7 @@ def preprocess(data: pd.DataFrame, lang: str="english") -> list:
         
         data_list.append({'content':row["tweet"], 'label':label})
         
-    return(data)
+    return(data_list)
 
 
 def write_file(data: list, out_file: str) -> None:
@@ -135,9 +135,9 @@ if __name__ == "__main__":
         train_preprocessed = preprocess(train, lang)
         dev_preprocessed = preprocess(dev, lang)
         
-        write_file(train_preprocessed, f"pp_train_{file_ending}")
-        write_file(dev_preprocessed, f"pp_dev_{file_ending}")
+        write_file(train_preprocessed, f"data/pp_train_{file_ending}")
+        write_file(dev_preprocessed, f"data/pp_dev_{file_ending}")
         
     else:
         train = preprocess(data, lang)
-        write_file(train, f"pp_{file_ending}")
+        write_file(train, f"data/pp_{file_ending}")
