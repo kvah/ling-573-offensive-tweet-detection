@@ -61,7 +61,7 @@ if __name__ == "__main__":
 
     # Fit tokenizer on all unique tokens
     all_tweets = list(train_tweets.content) + list(val_tweets.content)
-    tk = Tokenizer(lower = False, filters='')
+    tk = Tokenizer(lower=True, filters='')
     tk.fit_on_texts(all_tweets)
 
     # Pad training/validation sequences

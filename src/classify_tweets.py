@@ -51,7 +51,7 @@ if __name__ == "__main__":
     val_pred_labels = classifier.predict(val_vec)
     if args.val_output_csv:
         # Save validatition data and predictions
-        val_df = df_from_indices(args.val_indices)
+        val_df = df_from_indices(args.val_indices, tweets)
         val_df['predicted_label'] = val_pred_labels
         val_df.to_csv(args.val_output_csv)
 

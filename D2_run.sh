@@ -33,5 +33,5 @@ python3 src/classify_tweets.py \
 
 # Evaluation script
 python3 src/eval.py \
-    --val_output_csv outputs/D2_val_preds.csv
+    --val_output_csv outputs/D2_val_preds.csv \
     --output_path results/D2_scores.out
