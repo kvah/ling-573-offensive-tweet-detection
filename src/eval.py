@@ -3,18 +3,19 @@
 import argparse 
 import sys 
 import numpy as np
+import pandas as pd
 from sklearn.metrics import f1_score
 
 if __name__ == "__main__":
     # parse arguments
     parser = argparse.ArgumentParser(description="Write Evaluation Score (Macro F1) to output file")
-    parser.add_argument("--preds_path", type=str, required=True)
-    parser.add_argument("--true_labels_path", type=str, required=True)
+    parser.add_argument("--val_output_csv", type=str, required=True)
     parser.add_argument("--output_path", type=str, required=True)
     args = parser.parse_args(sys.argv[1:])
 
-    val_pred_labels = np.load(args.preds_path)
-    val_true_labels = np.load(args.true_labels_path)
+    val_df = pd.read_csv(args.val_output_csv)
+    val_pred_labels = val_df['predicted_label']
+    val_true_labels = val_df['label']
     f1_score = f1_score(val_true_labels, val_pred_labels, average="macro")
     print(f'Macro F1 Score: {f1_score}')
 

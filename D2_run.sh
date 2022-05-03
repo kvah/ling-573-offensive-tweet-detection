@@ -29,11 +29,9 @@ python3 src/classify_tweets.py \
     --val_indices data/val_ids.txt \
     --train_vectors data/train_vectors.npy \
     --val_vectors data/val_vectors.npy \
-    --preds_path outputs/D2_preds.npy \
-    --true_labels_path data/D2_true_labels.npy
+    --val_output_csv outputs/D2_val_preds.csv
 
 # Evaluation script
 python3 src/eval.py \
-    --preds_path outputs/D2_preds.npy \
-    --true_labels_path data/D2_true_labels.npy \
+    --val_output_csv outputs/D2_val_preds.csv
     --output_path results/D2_scores.out
