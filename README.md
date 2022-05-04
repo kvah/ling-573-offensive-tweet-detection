@@ -25,6 +25,12 @@ python -m gensim.scripts.glove2word2vec --input data/glove.twitter.27B.200d.txt 
 conda env create -f env.yml --prefix env
 ```
 
+If new dependencies have been added, you also need to update the conda environment
+
+```
+conda env update --prefix ./env --file env.yml --prune
+```
+
 ### 3. Run the condor script
 
 ```
