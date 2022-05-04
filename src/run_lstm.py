@@ -5,6 +5,8 @@
     python3 run_lstm.py --config PATH --train_data PATH --val_data PATH  > out_file
 """
 
+import os
+import pickle
 import argparse
 import copy
 import random
@@ -24,8 +26,6 @@ from tqdm import tqdm
 
 if __name__ == "__main__":
     
-    # TODO: figure out how to use GPU
-
     # argparse logic
     parser = argparse.ArgumentParser()
     parser.add_argument("--config", type=str, default=None)
@@ -52,17 +52,18 @@ if __name__ == "__main__":
     
     # make vocab + embed matrix
     tokenizer = TweetTokenizer(preserve_case=False, reduce_len=True)
-    vocabulary = vocab.make_vocab(train_df['content'], tokenizer.tokenize)
+    # we want both training/val vocab here since we are not training the embeddings
+    vocabulary = vocab.make_vocab(list(train_df['content']) + list(val_df['content']), tokenizer.tokenize)
     glove_embeds = vocab.load_glove_vectors(config.glove_embeds)
     embedding_matrix, idx_to_vocab, vocab_to_idx = vocab.get_embedding_matrix(
         glove_embeds, vocabulary)
-    train_vocab = vocab.Vocabulary(idx_to_vocab, vocab_to_idx)
+    all_vocab = vocab.Vocabulary(idx_to_vocab, vocab_to_idx)
     
     # convert tweets to indices
     train_df["encoded"] = train_df["content"].apply(
-        lambda x:train_vocab.tokens_to_indices(tokenizer.tokenize(x)))
+        lambda x: all_vocab.tokens_to_indices(tokenizer.tokenize(x)))
     val_df["encoded"] = val_df["content"].apply(
-        lambda x: train_vocab.tokens_to_indices(tokenizer.tokenize(x)))
+        lambda x: all_vocab.tokens_to_indices(tokenizer.tokenize(x)))
     
     # build datasets
     train_content = train_df["encoded"].to_list()
@@ -75,8 +76,8 @@ if __name__ == "__main__":
     val_examples = [{"content": val_content[i], "label": val_labels[i]}
                     for i in range(len(val_content))]
     
-    olid_train_data = OLIDDataset(train_examples, train_vocab)
-    olid_val_data = OLIDDataset(val_examples, train_vocab)
+    olid_train_data = OLIDDataset(train_examples, all_vocab)
+    olid_val_data = OLIDDataset(val_examples, all_vocab)
     
     
     # dev data as np arrays
@@ -87,12 +88,15 @@ if __name__ == "__main__":
 
     # Enable cuda if GPU is available
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    print(f'Using GPU: {device}')
+    print(f'Using Device: {device}')
     
     model = LSTM(
-        config=config, vocab_length = train_vocab.__len__(), 
-        pretrained_embs=embedding_matrix, padding_idx=padding_index
+        config=config, 
+        vocab_length = all_vocab.__len__(), 
+        pretrained_embs=embedding_matrix, 
+        padding_idx=padding_index
     )
+
     if device.type == 'cuda':
         model = model.cuda()
 
@@ -105,6 +109,8 @@ if __name__ == "__main__":
     best_loss = float("inf")
     best_model = None
     loss_fn = torch.nn.BCELoss()
+    # Create directory for saved models
+    os.makedirs('models', exist_ok=True)
 
     for epoch in tqdm(range(config.num_epochs)):
         running_loss = 0.0
@@ -147,6 +153,16 @@ if __name__ == "__main__":
             print("New best loss; saving current model")
             best_model = copy.deepcopy(model)
             # Save params of best model
-            torch.save(best_model.state_dict(), f'lstm_epoch{epoch}.pt')
-            
-    # TODO: report dev f1
+            model_path = f'models/lstm_epoch{epoch}.pt'
+            print(f"Saving best model to : {model_path}")
+            torch.save(best_model.state_dict(), model_path)
+    
+    # Save model configs so they can be loaded for prediction
+    saved_configs_path = 'lstm_saved_configs/'
+    os.makedirs(saved_configs_path, exist_ok=True)
+
+    print(model.state_dict()['embeddings.weight'].shape)
+    with open(saved_configs_path + 'vocab_length.pkl', 'wb') as fp:
+        pickle.dump(f'{model.vocab_length}', fp)
+    np.save(saved_configs_path + 'embedding_matrix.npy', model.pretrained_embs)
+    np.save(saved_configs_path + 'padding_index.npy', model.padding_idx)
