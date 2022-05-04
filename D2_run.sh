@@ -5,7 +5,11 @@ conda activate ./env
 
 # Preprocess tweets
 python3 src/preprocess_olid.py \
-    --file data/olid-training-v1.0.tsv
+    --file data/olid-training-v1.0.tsv \
+    --split_punctuation True \
+    --remove_apostraphes True \
+    --remove_hashtags True \
+    --split_emojis True
 
 # Convert glove embeddings to word2vec format
 python3 -m gensim.scripts.glove2word2vec \

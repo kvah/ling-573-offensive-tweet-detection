@@ -6,8 +6,10 @@ conda activate ./env
 # Preprocess tweets
 python3 src/preprocess_olid.py \
     --file data/olid-training-v1.0.tsv \
-    --train_ids data/train_ids.txt \
-    --dev_ids data/val_ids.txt
+    --split_punctuation True \
+    --remove_apostraphes True \
+    --remove_hashtags True \
+    --split_emojis True
 
 # Run LSTM classifier
 python3 src/run_lstm.py \

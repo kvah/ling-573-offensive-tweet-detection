@@ -11,18 +11,24 @@ from gensim.models import KeyedVectors
 from utils import df_from_indices
 
 def create_embedding_matrix(
-    embedding_path:str, 
+    embedding_path:str,
     embedding_size:int,
     word_to_index:Dict, 
-    max_features:int
+    max_features:int,
+    emoji_embedding_path:str = None
 ) -> np.ndarray:
     """Load pretrained embedding"""
     word_embeddings = KeyedVectors.load_word2vec_format(embedding_path, binary=False)
-
+    if emoji_embedding_path:
+        emoji_embeddings = KeyedVectors.load_word2vec_format(emoji_embedding_path, binary=False)
     embedding_matrix = np.zeros((max_features, embedding_size))
     for word, idx in word_to_index.items():
-        if idx < max_features and word in word_embeddings:
-            embedding_matrix[idx] = word_embeddings[word]
+        if idx < max_features:
+            # Use emoji2vec vector as default for emojis
+            if emoji_embedding_path and word in emoji_embeddings:
+                embedding_matrix[idx] = emoji_embeddings[word]
+            elif word in word_embeddings:
+                embedding_matrix[idx] = word_embeddings[word]
     return embedding_matrix 
 
 def embeddings_from_sequences(padded_sequence: np.ndarray, embedding_matrix: np.ndarray) -> np.ndarray:
@@ -48,6 +54,7 @@ if __name__ == "__main__":
     parser.add_argument("--train_indices", type=str, required=True)
     parser.add_argument("--val_indices", type=str, required=True)
     parser.add_argument("--embedding_path", type=str, required=True)
+    parser.add_argument("--emoji_embedding_path", type=str, required=False)
     parser.add_argument("--embedding_size", type=int, required=True)
     parser.add_argument("--train_vectors", type=str, default='data/train_vectors.npy')
     parser.add_argument("--val_vectors", type=str, default='data/val_vectors.npy')
@@ -58,7 +65,7 @@ if __name__ == "__main__":
     tweets = pd.read_csv(args.preprocessed_data, sep='\t')
     train_tweets = df_from_indices(args.train_indices, tweets)
     val_tweets = df_from_indices(args.val_indices, tweets)
-
+    
     # Fit tokenizer on all unique tokens
     all_tweets = list(train_tweets.content) + list(val_tweets.content)
     tk = Tokenizer(lower=True, filters='')
@@ -74,7 +81,8 @@ if __name__ == "__main__":
     # Load embeddings and featurize sequences
     word_to_index = tk.word_index
     word_embeddings = create_embedding_matrix(
-        embedding_path=args.embedding_path, 
+        embedding_path=args.embedding_path,
+        emoji_embedding_path=args.emoji_embedding_path, 
         embedding_size=args.embedding_size,
         max_features=min(len(word_to_index)+1, 40000),
         word_to_index=word_to_index

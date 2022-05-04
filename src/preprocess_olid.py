@@ -9,10 +9,9 @@
 
 import argparse
 import re
-
 import pandas as pd
-
 from sys import argv
+import emoji
 
 # define constants
 OFF = "OFF"
@@ -20,6 +19,99 @@ NOT = "NOT"
 
 # define types
 Example = {"content":str, "label":int}
+
+def split_punctuation(content: pd.Series) -> pd.Series:
+    """
+    Add whitespace seperation between and punctuation. 
+
+    Example: 
+        tweet: "By the way, I don't agree with your argument. #livid 👊👊"
+        new tweet: "By the way , I don't agree with your argument. 👊👊"
+    
+    Parameters
+    ----------
+    content : pd.Series
+        pandas Series containing tweets
+
+    Returns
+    -------
+    content: pd.Series: 
+        pandas Series containing cleaned tweets
+
+    """
+    cleaned_content = content.replace({r'(\w+)([!?.,])': r'\1 \2'}, regex=True)
+    return content 
+
+def remove_apostraphes(content: pd.Series) -> pd.Series:
+    """
+    Remove apostraphe from all contractions
+
+    Example: 
+        tweet: "By the way, I don't agree with your argument. #livid 👊👊"
+        new tweet: "By the way, I dont agree with your argument. #livid 👊👊"
+    
+    Parameters
+    ----------
+    content : pd.Series
+        pandas Series containing tweets
+
+    Returns
+    -------
+    content: pd.Series: 
+        pandas Series containing cleaned tweets
+
+    """
+    content = content.replace({r"(\w+)[’'](\w+)": r'\1\2'}, regex=True)
+    return content
+
+def remove_hashtags(content: pd.Series) -> pd.Series:
+    """
+    Remove hashtags from their attached phrase
+
+    Example: 
+        tweet: "By the way, I don't agree with your argument. #livid 👊👊"
+        new tweet: "By the way, I don't agree with your argument. livid 👊👊"
+    
+    Parameters
+    ----------
+    content : pd.Series
+        pandas Series containing tweets
+
+    Returns
+    -------
+    content: pd.Series: 
+        pandas Series containing cleaned tweets
+
+    """
+    content = content.replace({r"#(\w+)": r'\1'}, regex=True)
+    return content
+
+def split_emojis(content: pd.Series) -> pd.Series:
+    """
+    Add whitespace seperation between consecutive emojis
+
+    Example: 
+        tweet: "By the way, I don't agree with your argument. #livid 👊👊"
+        new tweet: "By the way, I don't agree with your argument. #livid  👊  👊 "
+    
+    Parameters
+    ----------
+    content : pd.Series
+        pandas Series containing tweets
+
+    Returns
+    -------
+    content: pd.Series: 
+        pandas Series containing cleaned tweets
+
+    """
+    emoji_with_space = {emo: f' {emo} ' for emo in emoji.UNICODE_EMOJI}
+    for emo, emo_spaced in emoji_with_space.items():
+        try:
+            content = content.str.replace(emo, emo_spaced, regex=True)
+        except Exception:
+            print(f'Failed to parse emoji: {emo}')
+    return content
 
 def preprocess(data: pd.DataFrame, lang: str="english") -> list:
     """
@@ -41,11 +133,21 @@ def preprocess(data: pd.DataFrame, lang: str="english") -> list:
     """
     
     # cut out everything but tweet and label
-    data = data[["tweet", "subtask_a"]]
+    tweets = data[["tweet", "subtask_a"]]
+
+    # preprocessing tasks
+    if args.split_punctuation:
+        tweets['tweet'] = split_punctuation(tweets['tweet'])
+    if args.remove_apostraphes:
+        tweets['tweet'] = remove_apostraphes(tweets['tweet'])
+    if args.remove_hashtags:
+        tweets['tweet'] = remove_hashtags(tweets['tweet'])
+    if args.split_emojis:
+        tweets['tweet'] = split_emojis(tweets['tweet'])
     
     data_list = []
     
-    for index, row in data.iterrows():
+    for index, row in tweets.iterrows():
         if row["subtask_a"] == OFF:
             label = 1
         else:
@@ -117,7 +219,24 @@ if __name__ == "__main__":
     parser.add_argument(
         "--dev_ids", default=None, 
         help="path to file containing IDs for development set (line-separated)")
-    
+
+    parser.add_argument(
+        "--split_punctuation", type=bool, default=True,
+        help="whether to split punctuation from the end of tokens"
+    )
+    parser.add_argument(
+        "--remove_apostraphes", type=bool, default=True,
+        help="whether to remove apostraphe from contractions"
+    )
+    parser.add_argument(
+        "--remove_hashtags", type=bool, default=False,
+        help="whether to remove the # symbol from hashtags"
+    )
+    parser.add_argument(
+        "--split_emojis", type=bool, default=False,
+        help="whether to split sequence of emojis by whitespace"
+    )    
+
     args = parser.parse_args(argv[1:])
     lang = args.language
     
