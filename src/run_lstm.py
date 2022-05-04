@@ -36,7 +36,7 @@ if __name__ == "__main__":
     # make config
     if args.config:
         config = LSTMConfig.from_json(args.config)
-        config_name = re.search(r"([^//]*).json", config).groups(1)
+        config_name = re.search(r"([^//]*).json", args.config).groups(1)[0]
     else:
         # use default values if no config given
         config = LSTMConfig()
