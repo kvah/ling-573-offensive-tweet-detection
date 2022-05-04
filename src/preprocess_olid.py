@@ -39,7 +39,7 @@ def split_punctuation(content: pd.Series) -> pd.Series:
         pandas Series containing cleaned tweets
 
     """
-    cleaned_content = content.replace({r'(\w+)([!?.,])': r'\1 \2'}, regex=True)
+    cleaned_content = content.replace({r'(\w+)([!?.])': r'\1 \2'}, regex=True)
     return cleaned_content 
 
 def remove_apostraphes(content: pd.Series) -> pd.Series:

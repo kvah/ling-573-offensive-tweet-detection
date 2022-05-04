@@ -38,8 +38,8 @@ if __name__ == "__main__":
     val_tweets = pd.read_csv(args.val_data, sep='\t')
 
     # get training and validation true labels
-    train_true_labels = get_labels(args.train_indices, tweets)
-    val_true_labels = get_labels(args.val_indices, tweets)
+    train_true_labels = train_tweets['label']
+    val_true_labels = val_tweets['label']
 
     # load training and validation vectors
     train_vec = np.load(args.train_vectors)

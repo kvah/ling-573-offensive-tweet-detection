@@ -3,7 +3,7 @@
   "dropout": 0.0,
   "embedding_dim": 200,
   "freeze_embeds": false,
-  "glove_embeds": "./data/glove.twitter.27B.200d.txt",
+  "glove_embeds": "./data/glove.twitter.27B.200d.w2vformat.txt",
   "hidden_dim": 300,
   "l2": 0.0,
   "lr": 7e-05,

@@ -70,13 +70,12 @@ def make_vocab(text: list, tokenizer) -> Counter:
     
 
 
-def load_glove_vectors(glove_file="./data/glove.twitter.27B.200d.txt")-> dict:
+def load_glove_vectors(glove_file="./data/glove.twitter.27B.200d.w2vformat.txt")-> dict:
     """
         Load the glove word vectors
     """
     word_embeddings = KeyedVectors.load_word2vec_format(glove_file, binary=False)
-    
-    return(word_embeddings)
+    return word_embeddings
 
 
 def get_embedding_matrix(word_vecs: dict, vocab: list, 

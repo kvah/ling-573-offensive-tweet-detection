@@ -10,15 +10,15 @@ python3 src/preprocess_olid.py \
     --val_ids data/val_ids.txt \
     --split_punctuation True \
     --remove_apostraphes True \
-    --remove_hashtags True \
-    --split_emojis True
-
+    --remove_hashtags True
+    
 # Create feature embeddings for train/val tweets
 python3 src/featurize_tweets.py \
     --preprocessed_data data/pp_olid-training-v1.0.tsv \
     --train_data data/clean_train_olid.tsv \
     --val_data data/clean_val_olid.tsv \
     --embedding_path data/glove.twitter.27B.200d.w2vformat.txt \
+    --emoji_embedding_path data/emoji2vec_200d.txt \
     --embedding_size 200 \
     --train_vectors data/train_vectors.npy \
     --val_vectors data/val_vectors.npy

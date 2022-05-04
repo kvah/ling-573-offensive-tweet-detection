@@ -24,11 +24,10 @@ def create_embedding_matrix(
     embedding_matrix = np.zeros((max_features, embedding_size))
     for word, idx in word_to_index.items():
         if idx < max_features:
-            # Use emoji2vec vector as default for emojis
-            if emoji_embedding_path and word in emoji_embeddings:
-                embedding_matrix[idx] = emoji_embeddings[word]
-            elif word in word_embeddings:
+            if word in word_embeddings:
                 embedding_matrix[idx] = word_embeddings[word]
+            elif emoji_embedding_path and word in emoji_embeddings:
+                embedding_matrix[idx] = emoji_embeddings[word]
     return embedding_matrix 
 
 def embeddings_from_sequences(padded_sequence: np.ndarray, embedding_matrix: np.ndarray) -> np.ndarray:

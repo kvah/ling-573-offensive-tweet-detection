@@ -1,7 +1,8 @@
 #!/bin/sh
 
 source ~/anaconda3/etc/profile.d/conda.sh
-conda activate ./env
+conda activate ./573_gpu
+# conda install pytorch torchvision cudatoolkit=10.2 -c pytorch --force-reinstall
 
 # Preprocess tweets
 python3 src/preprocess_olid.py \

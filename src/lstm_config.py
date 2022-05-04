@@ -20,7 +20,7 @@ class LSTMConfig():
             dropout: float = 0.0,
             num_layers: int = 1,
             hidden_dim: int = 300,
-            glove_embeds: str = "./data/glove.twitter.27B.200d.txt"
+            glove_embeds: str = "./data/glove.twitter.27B.200d.w2vformat.txt"
             ):
         self.seed = seed
         self.num_epochs = num_epochs

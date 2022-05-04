@@ -20,6 +20,7 @@ import vocab
 from data import OLIDDataset
 from lstm_model import LSTM
 from lstm_config import LSTMConfig
+from tqdm import tqdm
 
 if __name__ == "__main__":
     
@@ -83,11 +84,17 @@ if __name__ == "__main__":
 
     # BUILD MODEL
     padding_index = olid_train_data.padding_index
+
+    # Enable cuda if GPU is available
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    print(f'Using GPU: {device}')
     
     model = LSTM(
         config=config, vocab_length = train_vocab.__len__(), 
         pretrained_embs=embedding_matrix, padding_idx=padding_index
-                 )
+    )
+    if device.type == 'cuda':
+        model = model.cuda()
 
     # get training things set up
     data_size = olid_train_data.__len__()
@@ -99,7 +106,7 @@ if __name__ == "__main__":
     best_model = None
     loss_fn = torch.nn.BCELoss()
 
-    for epoch in range(config.num_epochs):
+    for epoch in tqdm(range(config.num_epochs)):
         running_loss = 0.0
         # shuffle batches
         random.shuffle(starts)
@@ -111,11 +118,11 @@ if __name__ == "__main__":
             # [batch_size, num_labels]
             model.train()
             logits = model(
-                torch.LongTensor(batch["content"]), torch.LongTensor(batch["lengths"])
+                torch.LongTensor(batch["content"]).to(device), torch.LongTensor(batch["lengths"]).to(device)
             )
             
             loss = loss_fn(
-                torch.squeeze(logits), torch.FloatTensor(batch["label"])
+                torch.squeeze(logits), torch.FloatTensor(batch["label"]).to(device)
             )
             running_loss += loss.item()
 
@@ -129,15 +136,17 @@ if __name__ == "__main__":
         # get dev loss every epoch
         model.eval()
         logits = model(
-            torch.LongTensor(val_data["content"]), torch.LongTensor(val_data["lengths"])
+            torch.LongTensor(val_data["content"]).to(device), torch.LongTensor(val_data["lengths"]).to(device)
         )
         epoch_loss = loss_fn(
-            torch.squeeze(logits), torch.FloatTensor(val_data["label"])
+            torch.squeeze(logits), torch.FloatTensor(val_data["label"]).to(device)
         ).item()
         print(f"Epoch {epoch} dev loss: {epoch_loss}")
         if epoch_loss < best_loss:
             best_loss = epoch_loss
             print("New best loss; saving current model")
             best_model = copy.deepcopy(model)
-
+            # Save params of best model
+            torch.save(best_model.state_dict(), f'lstm_epoch{epoch}.pt')
+            
     # TODO: report dev f1

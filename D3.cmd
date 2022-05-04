@@ -1,6 +1,7 @@
 Universe = vanilla
 Executable = D3_run.sh
-Output = run.out
-Log = log.txt
-Error = err.txt
+Output = D3_run.out
+Log = D3_log.txt
+Error = D3_err.txt
+request_memory = 8192
 Queue
