@@ -2,6 +2,7 @@
 
 source ~/anaconda3/etc/profile.d/conda.sh
 conda activate ./573_gpu
+# conda env update --prefix ./env --file env.yml --prune
 # conda install pytorch torchvision cudatoolkit=10.2 -c pytorch --force-reinstall
 
 # Preprocess tweets
