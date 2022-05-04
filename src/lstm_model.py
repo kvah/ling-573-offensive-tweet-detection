@@ -8,33 +8,34 @@ import numpy as np
 import torch.nn as nn
 
 from torch import Tensor
+from lstm_config import LSTMConfig
 
 class LSTM(nn.Module):
 
-    def __init__(self, vocab_length: int, pretrained_embs: np.ndarray,
-                 hidden: int = 300, num_layers: int = 1, drop_out: float = 0.0,
-                 embed_size: int = 200, padding_idx: int = 0,
-                 freeze_embeddings: bool = False):
+    def __init__(self, config: LSTMConfig, vocab_length: int, pretrained_embs: np.ndarray,
+                 padding_idx: int = 0):
         super(LSTM, self).__init__()
 
         self.padding_idx = padding_idx
 
-        self.embeddings = nn.Embedding(vocab_length, embed_size, padding_idx=self.padding_idx)
+        self.embeddings = nn.Embedding(
+            vocab_length, config.embedding_dim, padding_idx=self.padding_idx
+            )
         self.embeddings.weight.data.copy_(torch.from_numpy(pretrained_embs))
         # freeze embeddings
-        if freeze_embeddings:
+        if config.freeze_embeds:
             self.embeddings.weight.requires_grad = False
         
         
-        self.hidden = hidden
-        self.lstm = nn.LSTM(input_size=embed_size,
-                            hidden_size=hidden,
-                            num_layers=num_layers,
+        self.hidden = config.hidden_dim
+        self.lstm = nn.LSTM(input_size=config.embedding_dim,
+                            hidden_size=self.hidden,
+                            num_layers=config.num_layers,
                             batch_first=True,
                             bidirectional=True)
-        self.drop = nn.Dropout(p=drop_out)
+        self.drop = nn.Dropout(p=config.dropout)
 
-        self.linear = nn.Linear(hidden, 1)
+        self.linear = nn.Linear(self.hidden, 1)
 
     def forward(self, sequences: Tensor, lengths: Tensor):
 

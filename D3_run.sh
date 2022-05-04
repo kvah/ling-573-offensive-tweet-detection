@@ -11,6 +11,6 @@ python3 src/preprocess_olid.py \
 
 # Run LSTM classifier
 python3 src/run_lstm.py \
+    --config configs/D3.json \
     --train_data data/pp_train_olid-training-v1.0.tsv \
     --val_data data/pp_dev_olid-training-v1.0.tsv \
-    --num_epochs 20

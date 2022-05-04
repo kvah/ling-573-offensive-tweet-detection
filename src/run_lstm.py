@@ -2,9 +2,7 @@
     Script for running LSTM classifier on OLID dataset
     
     to run:
-    python3 run_lstm.py --train_data PATH --val_data PATH [--glove_embeds PATH] \
-        [--dropout FLOAT] [--l2 FLOAT] [--hidden_dim INT] [--embedding_dim INT] \
-        [--lr FLOAT] [--batch_size INT] [--num_epochs INT] [--seed INT] > out_file
+    python3 run_lstm.py --config PATH --train_data PATH --val_data PATH  > out_file
 """
 
 import argparse
@@ -21,6 +19,7 @@ from nltk.tokenize import TweetTokenizer
 import vocab
 from data import OLIDDataset
 from lstm_model import LSTM
+from lstm_config import LSTMConfig
 
 if __name__ == "__main__":
     
@@ -28,34 +27,32 @@ if __name__ == "__main__":
 
     # argparse logic
     parser = argparse.ArgumentParser()
-    parser.add_argument("--seed", type=int, default=11)
-    parser.add_argument("--num_epochs", type=int, default=100)
-    parser.add_argument("--batch_size", type=int, default=64)
-    parser.add_argument("--lr", type=float, default=1e-5)
-    parser.add_argument("--embedding_dim", type=int, default=200)
-    parser.add_argument("--hidden_dim", type=int, default=300)
-    parser.add_argument("--l2", type=float, default=0.0)
-    parser.add_argument("--dropout", type=float, default=0.0)
+    parser.add_argument("--config", type=str, default=None)
     parser.add_argument("--train_data",type=str)
     parser.add_argument("--val_data", type=str)
-    parser.add_argument("--glove_embeds", type=str,
-                        default="./data/glove.twitter.27B.200d.txt")
     
     args = parser.parse_args()
+    
+    # make config
+    if args.config:
+        config = LSTMConfig.from_json(args.config)
+    else:
+        # use default values if no config given
+        config = LSTMConfig()
 
     # set seed
-    random.seed(args.seed)
-    np.random.seed(args.seed)
-    torch.manual_seed(args.seed)
+    random.seed(config.seed)
+    np.random.seed(config.seed)
+    torch.manual_seed(config.seed)
 
     # DATA HANDLING
     train_df = pd.read_csv(args.train_data, sep="\t", header=0)
     val_df = pd.read_csv(args.val_data, sep="\t", header=0)
     
     # make vocab + embed matrix
-    tokenizer = TweetTokenizer()
+    tokenizer = TweetTokenizer(preserve_case=False, reduce_len=True)
     vocabulary = vocab.make_vocab(train_df['content'], tokenizer.tokenize)
-    glove_embeds = vocab.load_glove_vectors(args.glove_embeds)
+    glove_embeds = vocab.load_glove_vectors(config.glove_embeds)
     embedding_matrix, idx_to_vocab, vocab_to_idx = vocab.get_embedding_matrix(
         glove_embeds, vocabulary)
     train_vocab = vocab.Vocabulary(idx_to_vocab, vocab_to_idx)
@@ -87,21 +84,22 @@ if __name__ == "__main__":
     # BUILD MODEL
     padding_index = olid_train_data.padding_index
     
-    model = LSTM(vocab_length = train_vocab.__len__(), pretrained_embs=embedding_matrix,
-                 hidden=args.hidden_dim, drop_out= args.dropout,
-                 padding_idx=padding_index)
+    model = LSTM(
+        config=config, vocab_length = train_vocab.__len__(), 
+        pretrained_embs=embedding_matrix, padding_idx=padding_index
+                 )
 
     # get training things set up
     data_size = olid_train_data.__len__()
-    batch_size = args.batch_size
+    batch_size = config.batch_size
     starts = list(range(0, data_size, batch_size))
     # TODO: look into optimizer args
-    optimizer = torch.optim.Adam(model.parameters(), weight_decay=args.l2, lr=args.lr)
+    optimizer = torch.optim.Adam(model.parameters(), weight_decay=config.l2, lr=config.lr)
     best_loss = float("inf")
     best_model = None
     loss_fn = torch.nn.BCELoss()
 
-    for epoch in range(args.num_epochs):
+    for epoch in range(config.num_epochs):
         running_loss = 0.0
         # shuffle batches
         random.shuffle(starts)
