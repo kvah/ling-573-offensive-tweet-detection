@@ -25,8 +25,8 @@ if __name__ == "__main__":
     # parse arguments
     parser = argparse.ArgumentParser(description="Classify featurized tweets with logistic regression algorithm")
     parser.add_argument("--preprocessed_data", type=str, required=True)
-    parser.add_argument("--train_indices", type=str, required=True)
-    parser.add_argument("--val_indices", type=str, required=True)
+    parser.add_argument("--train_data", type=str, required=True)
+    parser.add_argument("--val_data", type=str, required=True)
     parser.add_argument("--train_vectors", type=str, required=True)
     parser.add_argument("--val_vectors", type=str, required=True)
     parser.add_argument("--val_output_csv", type=str, required=False)
@@ -34,7 +34,8 @@ if __name__ == "__main__":
     args = parser.parse_args(sys.argv[1:])
 
     # load tweets
-    tweets = pd.read_csv(args.preprocessed_data, sep="\t", header=0, encoding="utf8")
+    train_tweets = pd.read_csv(args.train_data, sep='\t')
+    val_tweets = pd.read_csv(args.val_data, sep='\t')
 
     # get training and validation true labels
     train_true_labels = get_labels(args.train_indices, tweets)
@@ -51,9 +52,8 @@ if __name__ == "__main__":
     val_pred_labels = classifier.predict(val_vec)
     if args.val_output_csv:
         # Save validatition data and predictions
-        val_df = df_from_indices(args.val_indices, tweets)
-        val_df['predicted_label'] = val_pred_labels
-        val_df.to_csv(args.val_output_csv)
+        val_tweets['predicted_label'] = val_pred_labels
+        val_tweets.to_csv(args.val_output_csv)
 
     print("macro f1-score")
     print(f1_score(val_true_labels, val_pred_labels, average="macro"))

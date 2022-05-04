@@ -51,8 +51,8 @@ if __name__ == "__main__":
     # Parse arguments
     parser = argparse.ArgumentParser(description="Create embedding features from a .tsv file containing tweets")
     parser.add_argument("--preprocessed_data", type=str, required=True)
-    parser.add_argument("--train_indices", type=str, required=True)
-    parser.add_argument("--val_indices", type=str, required=True)
+    parser.add_argument("--train_data", type=str, required=True)
+    parser.add_argument("--val_data", type=str, required=True)
     parser.add_argument("--embedding_path", type=str, required=True)
     parser.add_argument("--emoji_embedding_path", type=str, required=False)
     parser.add_argument("--embedding_size", type=int, required=True)
@@ -62,9 +62,8 @@ if __name__ == "__main__":
     args = parser.parse_args(sys.argv[1:])
 
     # Load training and validation data
-    tweets = pd.read_csv(args.preprocessed_data, sep='\t')
-    train_tweets = df_from_indices(args.train_indices, tweets)
-    val_tweets = df_from_indices(args.val_indices, tweets)
+    train_tweets = pd.read_csv(args.train_data, sep='\t')
+    val_tweets = pd.read_csv(args.val_data, sep='\t')
     
     # Fit tokenizer on all unique tokens
     all_tweets = list(train_tweets.content) + list(val_tweets.content)

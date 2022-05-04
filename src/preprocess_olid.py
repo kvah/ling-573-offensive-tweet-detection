@@ -3,7 +3,7 @@
     
     To use as a script, execute:
         python3 preprocess_olid.py --file FILE [--lang LANG] 
-        [--train_ids TRAIN_IDS --dev_ids DEV_IDS]
+        [--train_ids TRAIN_IDS --val_ids DEV_IDS]
     
 """
 
@@ -35,12 +35,12 @@ def split_punctuation(content: pd.Series) -> pd.Series:
 
     Returns
     -------
-    content: pd.Series: 
+    cleaned_content: pd.Series: 
         pandas Series containing cleaned tweets
 
     """
     cleaned_content = content.replace({r'(\w+)([!?.,])': r'\1 \2'}, regex=True)
-    return content 
+    return cleaned_content 
 
 def remove_apostraphes(content: pd.Series) -> pd.Series:
     """
@@ -57,12 +57,12 @@ def remove_apostraphes(content: pd.Series) -> pd.Series:
 
     Returns
     -------
-    content: pd.Series: 
+    cleaned_content: pd.Series: 
         pandas Series containing cleaned tweets
 
     """
-    content = content.replace({r"(\w+)[’'](\w+)": r'\1\2'}, regex=True)
-    return content
+    cleaned_content = content.replace({r"(\w+)[’'](\w+)": r'\1\2'}, regex=True)
+    return cleaned_content
 
 def remove_hashtags(content: pd.Series) -> pd.Series:
     """
@@ -79,12 +79,12 @@ def remove_hashtags(content: pd.Series) -> pd.Series:
 
     Returns
     -------
-    content: pd.Series: 
+    cleaned_content: pd.Series: 
         pandas Series containing cleaned tweets
 
     """
-    content = content.replace({r"#(\w+)": r'\1'}, regex=True)
-    return content
+    cleaned_content = content.replace({r"#(\w+)": r'\1'}, regex=True)
+    return cleaned_content
 
 def split_emojis(content: pd.Series) -> pd.Series:
     """
@@ -101,17 +101,21 @@ def split_emojis(content: pd.Series) -> pd.Series:
 
     Returns
     -------
-    content: pd.Series: 
+    content_copy: pd.Series: 
         pandas Series containing cleaned tweets
 
     """
+    # Note: I'm getting weird behavior when running this on patas.. may fix 
+    # later on but it doesn't yield much improvement anyway.
     emoji_with_space = {emo: f' {emo} ' for emo in emoji.UNICODE_EMOJI}
+
+    cleaned_content = content.copy()
     for emo, emo_spaced in emoji_with_space.items():
         try:
-            content = content.str.replace(emo, emo_spaced, regex=True)
+            cleaned_content = cleaned_content.str.replace(emo, emo_spaced, regex=True)
         except Exception:
             print(f'Failed to parse emoji: {emo}')
-    return content
+    return cleaned_content
 
 def preprocess(data: pd.DataFrame, lang: str="english") -> list:
     """
@@ -135,15 +139,17 @@ def preprocess(data: pd.DataFrame, lang: str="english") -> list:
     # cut out everything but tweet and label
     tweets = data[["tweet", "subtask_a"]]
 
+    tweets_copy = tweets['tweet'].copy()
     # preprocessing tasks
     if args.split_punctuation:
-        tweets['tweet'] = split_punctuation(tweets['tweet'])
+        tweets_copy = split_punctuation(tweets_copy)
     if args.remove_apostraphes:
-        tweets['tweet'] = remove_apostraphes(tweets['tweet'])
+        tweets_copy = remove_apostraphes(tweets_copy)
     if args.remove_hashtags:
-        tweets['tweet'] = remove_hashtags(tweets['tweet'])
+        tweets_copy = remove_hashtags(tweets_copy)
     if args.split_emojis:
-        tweets['tweet'] = split_emojis(tweets['tweet'])
+        tweets_copy = split_emojis(tweets_copy)
+    tweets['tweet'] = tweets_copy
     
     data_list = []
     
@@ -153,7 +159,7 @@ def preprocess(data: pd.DataFrame, lang: str="english") -> list:
         else:
             label = 0
         
-        data_list.append({'content':row["tweet"], 'label':label})
+        data_list.append({'content': row["tweet"], 'label': label})
         
     return(data_list)
 
@@ -174,7 +180,7 @@ def write_file(data: list, out_file: str) -> None:
     file.close()
     
 def split_data(data: pd.DataFrame, train_ids_file: str, 
-               dev_ids_file: str) -> [pd.DataFrame, pd.DataFrame]:
+               val_ids_file: str) -> [pd.DataFrame, pd.DataFrame]:
     """
     Splits canonical training data into train and dev
 
@@ -184,7 +190,7 @@ def split_data(data: pd.DataFrame, train_ids_file: str,
         OLID data, must include 'id' field
     train_ids_file : str
         line-separated file containing ids corresponding to training set
-    dev_ids_file : str
+    val_ids_file : str
         line-separated file containing ids corresponding to dev set
 
     Returns
@@ -193,15 +199,13 @@ def split_data(data: pd.DataFrame, train_ids_file: str,
     test_set : pd.DataFrame
 
     """
-    train_ids = pd.Index([int(n) for n in 
-                     open(train_ids_file).readlines()])
-    dev_ids = pd.Index([int(n) for n in 
-                   open(dev_ids_file).readlines()])
+    train_ids = [int(idx.strip()) for idx in open(train_ids_file).readlines()]
+    val_ids = [int(idx.strip()) for idx in open(val_ids_file).readlines()]
     
     train_set = data.loc[train_ids]
-    dev_set = data.loc[dev_ids]
+    val_set = data.loc[val_ids]
     
-    return(train_set, dev_set)
+    return(train_set, val_set)
         
 if __name__ == "__main__":
     
@@ -217,23 +221,23 @@ if __name__ == "__main__":
         "--train_ids", default=None, 
         help="path to file containing IDs for training set (line-separated)")
     parser.add_argument(
-        "--dev_ids", default=None, 
+        "--val_ids", default=None, 
         help="path to file containing IDs for development set (line-separated)")
 
     parser.add_argument(
-        "--split_punctuation", type=bool, default=True,
+        "--split_punctuation", type=str, default=None,
         help="whether to split punctuation from the end of tokens"
     )
     parser.add_argument(
-        "--remove_apostraphes", type=bool, default=True,
+        "--remove_apostraphes", type=str, default=None,
         help="whether to remove apostraphe from contractions"
     )
     parser.add_argument(
-        "--remove_hashtags", type=bool, default=False,
+        "--remove_hashtags", type=str, default=None,
         help="whether to remove the # symbol from hashtags"
     )
     parser.add_argument(
-        "--split_emojis", type=bool, default=False,
+        "--split_emojis", type=bool, default=None,
         help="whether to split sequence of emojis by whitespace"
     )    
 
@@ -248,15 +252,20 @@ if __name__ == "__main__":
     # split data if specified
     if args.train_ids != None:
         train_ids = args.train_ids
-        dev_ids = args.dev_ids
-        train, dev = split_data(data, train_ids, dev_ids)
+        val_ids = args.val_ids
+        train, val = split_data(data, train_ids, val_ids)
         
         train_preprocessed = preprocess(train, lang)
-        dev_preprocessed = preprocess(dev, lang)
-        
-        write_file(train_preprocessed, f"data/pp_train_{file_ending}")
-        write_file(dev_preprocessed, f"data/pp_dev_{file_ending}")
+        val_preprocessed = preprocess(val, lang)
+
+        train_csv_path = f'data/clean_train_olid.tsv'
+        val_csv_path = f'data/clean_val_olid.tsv'
+
+        print(f"Writing preprocessed training data to: {train_csv_path}")
+        print(f"Writing preprocessed validation data to: {val_csv_path}")
+        write_file(train_preprocessed, train_csv_path)
+        write_file(val_preprocessed, val_csv_path)
         
     else:
         train = preprocess(data, lang)
-        write_file(train, f"data/pp_{file_ending}")
+        write_file(train, f"data/clean_olid.tsv")
