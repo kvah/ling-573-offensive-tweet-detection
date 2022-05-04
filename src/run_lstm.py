@@ -9,22 +9,21 @@ import argparse
 import copy
 import random
 import torch
+import re
 
 import numpy as np
 import pandas as pd
 
 from tqdm import tqdm
 from nltk.tokenize import TweetTokenizer
+from time import time
 
 import vocab
 from data import OLIDDataset
 from lstm_model import LSTM
 from lstm_config import LSTMConfig
-from tqdm import tqdm
 
 if __name__ == "__main__":
-    
-    # TODO: figure out how to use GPU
 
     # argparse logic
     parser = argparse.ArgumentParser()
@@ -37,9 +36,11 @@ if __name__ == "__main__":
     # make config
     if args.config:
         config = LSTMConfig.from_json(args.config)
+        config_name = re.search(r"([^//]*).json", config).groups(1)
     else:
         # use default values if no config given
         config = LSTMConfig()
+        config_name = str(time())
 
     # set seed
     random.seed(config.seed)
@@ -105,6 +106,10 @@ if __name__ == "__main__":
     best_loss = float("inf")
     best_model = None
     loss_fn = torch.nn.BCELoss()
+    
+    # record train, dev loss in a csv
+    csv = open(f"{config_name}_lstm.csv", mode="w+")
+    csv.write("epoch,train_loss,dev_loss\n")
 
     for epoch in tqdm(range(config.num_epochs)):
         running_loss = 0.0
@@ -131,7 +136,8 @@ if __name__ == "__main__":
             loss.backward()
             optimizer.step()
 
-        print(f"Epoch {epoch} train loss: {running_loss / len(starts)}")
+        train_loss = running_loss / len(starts)
+        print(f"Epoch {epoch} train loss: {train_loss}")
 
         # get dev loss every epoch
         model.eval()
@@ -142,11 +148,14 @@ if __name__ == "__main__":
             torch.squeeze(logits), torch.FloatTensor(val_data["label"]).to(device)
         ).item()
         print(f"Epoch {epoch} dev loss: {epoch_loss}")
+        csv.write(f"{epoch},{train_loss},{epoch_loss}\n")
+        
         if epoch_loss < best_loss:
             best_loss = epoch_loss
             print("New best loss; saving current model")
             best_model = copy.deepcopy(model)
             # Save params of best model
-            torch.save(best_model.state_dict(), f'lstm_epoch{epoch}.pt')
-            
+            torch.save(best_model.state_dict(), f'lstm_{config_name}_epoch{epoch}.pt')
+    
+    csv.close()        
     # TODO: report dev f1
