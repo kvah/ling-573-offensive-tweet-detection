@@ -1,7 +1,6 @@
 #!/bin/sh
 
 source ~/anaconda3/etc/profile.d/conda.sh
-conda env update --prefix ./env --file env.yml --prune
 conda activate ./env
 
 # Preprocess tweets

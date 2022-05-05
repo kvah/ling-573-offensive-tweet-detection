@@ -117,4 +117,5 @@ if __name__ == "__main__":
 
     preds = get_predictions_from_logits(logits, 0.5)
     val_df['predicted_label'] = preds
+    val_df = val_df[['label', 'predicted_label', 'content']]
     val_df.to_csv(args.val_output_csv)
