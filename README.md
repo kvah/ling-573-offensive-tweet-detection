@@ -48,6 +48,8 @@ And run the following commands
 ```
 conda activate ./573_gpu
 conda install pytorch torchvision cudatoolkit=10.2 -c pytorch --force-reinstall
+
+condor_submit D3_gpu.cmd
 ```
 
 This script does the following:
