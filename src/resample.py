@@ -1,5 +1,5 @@
 """
-Module for resampling
+Module for resampling: Resample before preprocessing
 Resample Strategy: Oversample/Undersample
 
 To use as a script, execute:
