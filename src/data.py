@@ -53,5 +53,6 @@ def pad_batch(sequences: list, padding_index: int) -> np.ndarray:
     pads = [padding_index for i in range(max_len)]
     # pad sequences
     return np.stack(
-        [np.append(sequences[i], pads[lengths[i]:]) for i in range(len(sequences))])
-
+        [np.append(sequences[i], pads[lengths[i]:]) 
+        for i in range(len(sequences))]
+    )

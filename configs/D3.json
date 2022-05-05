@@ -7,7 +7,7 @@
   "hidden_dim": 300,
   "l2": 0.0,
   "lr": 7e-05,
-  "num_epochs": 100,
+  "num_epochs": 10,
   "num_layers": 4,
   "seed": 1
 }

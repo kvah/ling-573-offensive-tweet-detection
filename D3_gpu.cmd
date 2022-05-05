@@ -5,4 +5,5 @@ Log = D3_log.txt
 Error = D3_err.txt
 request_GPUs = 1
 request_memory = 8192
+Requirements = (Machine == "patas-gn1.ling.washington.edu" || Machine == "patas-gn2.ling.washington.edu")
 Queue

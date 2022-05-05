@@ -2,8 +2,6 @@
 
 source ~/anaconda3/etc/profile.d/conda.sh
 conda activate ./573_gpu
-# conda env update --prefix ./env --file env.yml --prune
-# conda install pytorch torchvision cudatoolkit=10.2 -c pytorch --force-reinstall
 
 # Preprocess tweets
 python3 src/preprocess_olid.py \
@@ -14,8 +12,24 @@ python3 src/preprocess_olid.py \
     --remove_apostraphes True \
     --remove_hashtags True
 
-# Run LSTM classifier
-python3 src/run_lstm.py \
+# Train LSTM classifier
+python3 src/lstm_train.py \
     --config configs/D3.json \
     --train_data data/clean_train_olid.tsv \
     --val_data data/clean_val_olid.tsv \
+    --model_config_path lstm_saved_configs \
+
+# Run LSTM predictions and generate output
+python3 src/lstm_predict.py \
+    --config configs/D3.json\
+    --train_data data/clean_train_olid.tsv \
+    --val_data data/clean_val_olid.tsv \
+    --model_config_path lstm_saved_configs \
+    --model_path models/lstm_D3_best_model.pt \
+    --threshold 0.5 \
+    --val_output_csv outputs/D3_val_preds.csv
+
+# Evaluation script
+python3 src/eval.py \
+    --val_output_csv outputs/D3_val_preds.csv \
+    --output_path results/D3_scores.out

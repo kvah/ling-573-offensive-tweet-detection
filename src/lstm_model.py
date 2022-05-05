@@ -15,7 +15,8 @@ class LSTM(nn.Module):
     def __init__(self, config: LSTMConfig, vocab_length: int, pretrained_embs: np.ndarray,
                  padding_idx: int = 0):
         super(LSTM, self).__init__()
-
+        
+        self.vocab_length = vocab_length
         self.padding_idx = padding_idx
 
         self.embeddings = nn.Embedding(

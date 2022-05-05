@@ -31,7 +31,8 @@ if __name__ == "__main__":
     parser.add_argument("--config", type=str, default=None)
     parser.add_argument("--train_data",type=str)
     parser.add_argument("--val_data", type=str)
-    
+    parser.add_argument("--model_config_path", type=str)
+
     args = parser.parse_args()
     
     # make config
@@ -57,8 +58,7 @@ if __name__ == "__main__":
     # we want both training/val vocab here since we are not training the embeddings
     vocabulary = vocab.make_vocab(list(train_df['content']) + list(val_df['content']), tokenizer.tokenize)
     glove_embeds = vocab.load_glove_vectors(config.glove_embeds)
-    embedding_matrix, idx_to_vocab, vocab_to_idx = vocab.get_embedding_matrix(
-        glove_embeds, vocabulary)
+    embedding_matrix, idx_to_vocab, vocab_to_idx = vocab.get_embedding_matrix(glove_embeds, vocabulary)
     all_vocab = vocab.Vocabulary(idx_to_vocab, vocab_to_idx)
     
     # convert tweets to indices
@@ -163,19 +163,25 @@ if __name__ == "__main__":
             best_model = copy.deepcopy(model)
             # Save params of best model
             model_path = f'models/lstm_epoch{epoch}.pt'
-            print(f"Saving best model to : {model_path}")
+            print(f"Saving model to : {model_path}")
             torch.save(best_model.state_dict(), model_path)
     
     # Save model configs so they can be loaded for prediction
-    saved_configs_path = 'lstm_saved_configs/'
-    os.makedirs(saved_configs_path, exist_ok=True)
+    model_config_path = args.model_config_path
+    os.makedirs(model_config_path, exist_ok=True)
 
-    print(model.state_dict()['embeddings.weight'].shape)
-    with open(saved_configs_path + 'vocab_length.pkl', 'wb') as fp:
-        pickle.dump(f'{model.vocab_length}', fp)
-    np.save(saved_configs_path + 'embedding_matrix.npy', model.pretrained_embs)
-    np.save(saved_configs_path + 'padding_index.npy', model.padding_idx)
-    torch.save(best_model.state_dict(), f'lstm_{config_name}_epoch{epoch}.pt')
+    vocab_length_path = os.path.join(model_config_path, 'vocab_length.pkl')
+    padding_index_path = os.path.join(model_config_path, 'padding_index.pkl')
+    embedding_matrix_path = os.path.join(model_config_path, 'embedding_matrix.npy')
+    best_model_path = os.path.join('models', f'lstm_{config_name}_best_model.pt')
+
+    with open(vocab_length_path, 'wb') as fp:
+        pickle.dump(f'{best_model.vocab_length}', fp)
+    with open(padding_index_path, 'wb') as fp:
+        pickle.dump(f'{best_model.padding_idx}', fp)
+
+    np.save(embedding_matrix_path, best_model.embeddings.weight.cpu().data.numpy())
+    torch.save(best_model.state_dict(), best_model_path)
+    print(f'Best model saved to: {best_model_path}')
     
     csv.close()        
-    # TODO: report dev f1
