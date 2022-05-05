@@ -1,4 +1,12 @@
 # Steps to create feature vectors for classification
+0. Run `resample.py` to resample training data (if you want to deal with imbalence classes)
+```
+python resample.py --data olid-training-v1.0.tsv --train_ids train_ids.txt --resample_strategy oversample --alpha 0.8
+```
+or 
+```
+python resample.py --data olid-training-v1.0.tsv --train_ids train_ids.txt --resample_strategy undersample --alpha 0.8
+```
 
 1. Run `preprocess_olid.py` to generate preprocessed tweets
 

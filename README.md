@@ -37,6 +37,21 @@ conda env update --prefix ./env --file env.yml --prune
 condor_submit D2.cmd
 ```
 
+### 4. To run Condor scripts on a GPU, create a separate conda environment
+
+```
+conda env create -f env.yml --prefix ./573_gpu
+```
+
+And run the following commands
+
+```
+conda activate ./573_gpu
+conda install pytorch torchvision cudatoolkit=10.2 -c pytorch --force-reinstall
+
+condor_submit D3_gpu.cmd
+```
+
 This script does the following:
 
 1. Pre-processes OLID data and splits it into train and validation sets.
