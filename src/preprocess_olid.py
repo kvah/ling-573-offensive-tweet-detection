@@ -3,7 +3,9 @@
     
     To use as a script, execute:
         python3 preprocess_olid.py --file FILE [--lang LANG] 
-        [--train_ids TRAIN_IDS --val_ids DEV_IDS]
+        [--train_ids TRAIN_IDS --val_ids DEV_IDS] [--split_punctuation BOOL]
+        [--remove_apostraphes BOOL] [--remove_hashtags BOOL] [--split_emojis BOOL]
+        [--convert_negation BOOL]
     
 """
 
@@ -12,6 +14,13 @@ import re
 import pandas as pd
 from sys import argv
 import emoji
+import spacy
+import nltk
+from nltk.wsd import lesk
+from nltk.corpus import wordnet as wn
+
+# load spacy model
+nlp = spacy.load("en_core_web_sm", disable = ["tok2vec", "lemmatizer", "ner" ])
 
 # define constants
 OFF = "OFF"
@@ -19,6 +28,117 @@ NOT = "NOT"
 
 # define types
 Example = {"content":str, "label":int}
+
+def get_antonyms(syn: nltk.corpus.reader.wordnet.Synset) -> list:
+    """
+    Get the antonyms of a wordnet synset 
+    
+    Parameters
+    ----------
+    syn: nltk.Synset
+        a wordnet synset
+
+    Returns
+    -------
+    antonyms: list 
+        a list of antonyms of the input synset (if applicable);
+        an empty list is returned if no antonyms are found
+
+    """
+    antonyms = set()
+    for lem in syn.lemmas():
+        if lem.antonyms():
+            antonyms.add(lem.antonyms()[0].name())
+    antonyms = list(antonyms)
+    return antonyms
+
+def convert_negated_sent(sent: str) -> str:
+    """
+    Replace negated adj/adv with their antonyms 
+    
+    Parameters
+    ----------
+    sent: str
+        a tweet
+
+    Returns
+    -------
+    sent: str 
+        a sentence with the negation (and the adj/adv following it) replaced
+
+    """
+    pos_covert = {"ADJ": "a", "ADV": "r"}
+    doc = nlp(sent)
+
+    # tokenize sentence and get negation tokens
+    tokenized_sent = []
+    negation_tokens = []
+    for token in doc:
+        tokenized_sent.append(token.text)
+        if token.dep_ == "neg":
+            negation_tokens.append(token)
+    
+    # get the heads of the negation tokens
+    negation_head_tokens = [token.head for token in negation_tokens]
+
+    if negation_tokens:
+        head_mod_children = []
+        head_mod_children_ant = []
+        for token in negation_head_tokens:
+            head_mod_children += [child for child in token.children if child.pos_ == "ADJ" or child.pos_ == "ADV"] # get the adj or adv
+        
+        if head_mod_children:
+            # collect antonyms for all the adjs/advs (one for each of them; if applicable)
+            for mod_child in head_mod_children:
+                synset = lesk(tokenized_sent, mod_child.text, pos = pos_covert[mod_child.pos_])
+                if not synset and mod_child.pos_ == "ADJ":
+                    synset = lesk(tokenized_sent, mod_child.text, pos = pos_covert[mod_child.pos_])
+
+                if not synset: # leave the sentence unchanged if no synset is found for the adj/adv
+                    return " ".join(tokenized_sent)
+                
+                antonyms = get_antonyms(synset)
+                # append one antonym if any; append an empty string if no antonyms are found
+                if antonyms:
+                    head_mod_children_ant.append(antonyms[0])
+                else:
+                    head_mod_children_ant.append("")
+            
+            # replace adjs/advs with their antonyms
+            for idx, mod_child in enumerate(head_mod_children):
+                tokenized_sent[mod_child.i] = head_mod_children_ant[idx]
+            
+            # remove negation tokens
+            for neg_token in negation_tokens:
+                tokenized_sent[neg_token.i] = ""
+    
+    # get rid of emoty strings
+    tokenized_sent = [token for token in tokenized_sent if token]
+    return " ".join(tokenized_sent)
+
+def convert_negation(content: pd.Series) -> pd.Series:
+    """
+    Convert tweets with negation into non-negated form
+
+    Example:
+        tweet: "@USER @USER He is not good in Debate but very good in Dancing Competition."
+        new tweet: "@USER @USER He is evil in Debate but very good in Dancing Competition ."
+    
+    Parameters
+    ----------
+    content : pd.Series
+        pandas Series containing tweets
+
+    Returns
+    -------
+    content : pd.Series
+        pandas Series containing tweets with negated tweets converted
+
+    """
+    for i, line in enumerate(content):
+        content[i] = convert_negated_sent(line)
+    
+    return content
 
 def split_punctuation(content: pd.Series) -> pd.Series:
     """
@@ -149,6 +269,8 @@ def preprocess(data: pd.DataFrame, lang: str="english") -> list:
         tweets_copy = remove_hashtags(tweets_copy)
     if args.split_emojis:
         tweets_copy = split_emojis(tweets_copy)
+    if args.convert_negation:
+        tweets_copy = convert_negation(tweets_copy)
     tweets['tweet'] = tweets_copy
     
     data_list = []
@@ -239,6 +361,10 @@ if __name__ == "__main__":
     parser.add_argument(
         "--split_emojis", type=bool, default=None,
         help="whether to split sequence of emojis by whitespace"
+    )
+    parser.add_argument(
+        "--convert_negation", type=bool, default=None,
+        help="whether to convert negated sentences into non-negated forms"
     )    
 
     args = parser.parse_args(argv[1:])
