@@ -20,8 +20,11 @@ from nltk.wsd import lesk
 from nltk.corpus import wordnet as wn
 from spacymoji import Emoji
 
+# download nltk data
+nltk.download('omw-1.4')
+
 # load spacy model
-nlp = spacy.load("en_core_web_sm", disable = ["tok2vec", "lemmatizer", "ner"])
+nlp = spacy.load("en_core_web_sm", disable = ["lemmatizer", "ner", "textcat"])
 
 # add pipe to spacy model
 nlp.add_pipe("emoji", first=True)
