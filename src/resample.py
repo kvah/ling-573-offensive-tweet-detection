@@ -14,6 +14,7 @@ import sys
 import numpy as np
 import pandas as pd
 from utils import df_from_indices
+from random import shuffle
 
 def undersample(alpha: float, maj_class_ids: pd.DataFrame, min_class_len: int) -> np.ndarray:
     """
@@ -156,6 +157,7 @@ if __name__ == "__main__":
 
     # get all ids for training data
     resampled_ids = list(min_class_ids) + list(maj_class_ids)
+    shuffle(resampled_ids)
 
     # output ids
     output_fp = "data/" + args.resample_strategy + "_train_ids.txt"
