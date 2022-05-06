@@ -2,7 +2,7 @@
     Script for running LSTM classifier on OLID dataset
     
     to run:
-    python3 run_lstm.py --config PATH --train_data PATH --val_data PATH  > out_file
+    python3 run_lstm.py --config PATH --train_data PATH --val_data PATH --model_config_path PATH  > out_file
 """
 
 import os
