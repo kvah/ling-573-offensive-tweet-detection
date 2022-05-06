@@ -5,7 +5,7 @@
         python3 preprocess_olid.py --file FILE [--lang LANG] 
         [--train_ids TRAIN_IDS --val_ids DEV_IDS] [--split_punctuation BOOL]
         [--remove_apostraphes BOOL] [--remove_hashtags BOOL] [--split_emojis BOOL]
-        [--convert_negation BOOL]
+        [--convert_negation BOOL] [--convert_emojis BOOL]
     
 """
 
