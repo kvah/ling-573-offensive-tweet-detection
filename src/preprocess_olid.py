@@ -18,9 +18,13 @@ import spacy
 import nltk
 from nltk.wsd import lesk
 from nltk.corpus import wordnet as wn
+from spacymoji import Emoji
 
 # load spacy model
-nlp = spacy.load("en_core_web_sm", disable = ["tok2vec", "lemmatizer", "ner" ])
+nlp = spacy.load("en_core_web_sm", disable = ["tok2vec", "lemmatizer", "ner"])
+
+# add pipe to spacy model
+nlp.add_pipe("emoji", first=True)
 
 # define constants
 OFF = "OFF"
@@ -28,6 +32,70 @@ NOT = "NOT"
 
 # define types
 Example = {"content":str, "label":int}
+
+def emoji2des(line: str) -> str:
+    """
+    Convert emojis into corresponding descriptions
+    
+    Example:
+        tweet: "@USER 🤷🏼‍♀️ that would be silly."
+        new tweet: "@USER that would be silly . woman shrugging medium-light skin tone"
+    
+    Parameters
+    ----------
+    line: str
+        a tweet
+
+    Returns
+    -------
+    converted_line 
+        a tweet with emojis converted into corresponding descriptions
+    
+    * Note1: If an emoji occurs multiple times, only one will be kept
+    * Note2: Emoji descriptions are attached to the very end of the line.
+             (might result in ungrammatical sentences) Therefore, this 
+             preprocessing method should be used after all other methods.
+
+    """
+    doc = nlp(line)
+    tokens = [token.text for token in doc]
+    # convert line if emojis are found
+    if doc._.has_emoji:
+        emoji_des_set = set()
+        for doc_emoji in doc._.emoji:
+            emoji_des_set.add(doc_emoji[2])
+            tokens[doc_emoji[1]] = ""
+        tokens = [token for token in tokens if token]
+
+        # attach emoji descriptions to the end of the line
+        tokens += list(emoji_des_set)
+
+    converted_line = " ".join(tokens)
+    return converted_line
+
+def convert_emojis(content: pd.Series) -> pd.Series:
+    """
+    Convert emojis in tweets into emoji descriptions
+
+    Example:
+        tweet: "@USER 🤷🏼‍♀️ that would be silly."
+        new tweet: "@USER that would be silly . woman shrugging medium-light skin tone"
+    
+    Parameters
+    ----------
+    content : pd.Series
+        pandas Series containing tweets
+
+    Returns
+    -------
+    content : pd.Series
+        pandas Series containing tweets with emojis converted
+
+    """
+    for i, line in enumerate(content):
+        content[i] = emoji2des(line)
+        
+    return content
 
 def get_antonyms(syn: nltk.corpus.reader.wordnet.Synset) -> list:
     """
@@ -271,6 +339,8 @@ def preprocess(data: pd.DataFrame, lang: str="english") -> list:
         tweets_copy = split_emojis(tweets_copy)
     if args.convert_negation:
         tweets_copy = convert_negation(tweets_copy)
+    if args.convert_emojis: # should be the last method being applied
+        tweets_copy = convert_emojis(tweets_copy)
     tweets['tweet'] = tweets_copy
     
     data_list = []
@@ -365,6 +435,10 @@ if __name__ == "__main__":
     parser.add_argument(
         "--convert_negation", type=bool, default=None,
         help="whether to convert negated sentences into non-negated forms"
+    )
+    parser.add_argument(
+        "--convert_emojis", type=bool, default=None,
+        help="whether to convert emojis into corresponding text descriptions"
     )    
 
     args = parser.parse_args(argv[1:])
