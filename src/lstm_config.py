@@ -12,14 +12,14 @@ class LSTMConfig():
     def __init__(self,
             seed: int = 11,
             num_epochs: int = 100,
-            batch_size: int = 64,
-            lr: float = 1e-3,
+            batch_size: int = 32,
+            lr: float = 5e-5,
             freeze_embeds: bool = False,
             embedding_dim: int = 200,
-            l2: float = 0.0,
-            dropout: float = 0.0,
+            l2: float = 1e-4,
+            dropout: float = 0.5,
             num_layers: int = 1,
-            hidden_dim: int = 300,
+            hidden_dim: int = 1000,
             glove_embeds: str = "./data/glove.twitter.27B.200d.w2vformat.txt"
             ):
         self.seed = seed
