@@ -53,11 +53,6 @@ def emoji2des(line: str) -> str:
     -------
     converted_line 
         a tweet with emojis converted into corresponding descriptions
-    
-    * Note1: If an emoji occurs multiple times, only one will be kept
-    * Note2: Emoji descriptions are attached to the very end of the line.
-             (might result in ungrammatical sentences) Therefore, this 
-             preprocessing method should be used after all other methods.
 
     """
     doc = nlp(line)
@@ -93,6 +88,12 @@ def convert_emojis(content: pd.Series) -> pd.Series:
     -------
     content : pd.Series
         pandas Series containing tweets with emojis converted
+        
+    * Note1: If an emoji occurs multiple times, only one will be kept
+    * Note2: Emoji descriptions are attached to the very end of the line.
+             (might result in ungrammatical sentences) Therefore, this 
+             preprocessing method should be used after all other methods.
+    * Note3: Punctuations are separated from words.
 
     """
     for i, line in enumerate(content):
@@ -204,6 +205,8 @@ def convert_negation(content: pd.Series) -> pd.Series:
     -------
     content : pd.Series
         pandas Series containing tweets with negated tweets converted
+    
+    * Note: Punctuations are separated from words.
 
     """
     for i, line in enumerate(content):
