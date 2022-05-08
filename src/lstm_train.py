@@ -55,7 +55,8 @@ if __name__ == "__main__":
     
     # make vocab + embed matrix
     tokenizer = TweetTokenizer(preserve_case=False, reduce_len=True)
-    vocabulary = vocab.make_vocab(list(train_df['content']), tokenizer.tokenize)
+    # vocabulary = vocab.make_vocab(list(train_df['content']), tokenizer.tokenize)
+    vocabulary = vocab.make_vocab(list(train_df['content']) + list(val_df['content']), tokenizer.tokenize)
     glove_embeds = vocab.load_glove_vectors(config.glove_embeds)
     embedding_matrix, idx_to_vocab, vocab_to_idx = vocab.get_embedding_matrix(glove_embeds, vocabulary)
     all_vocab = vocab.Vocabulary(idx_to_vocab, vocab_to_idx)

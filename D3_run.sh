@@ -26,7 +26,7 @@ python3 src/lstm_predict.py \
     --val_data data/clean_val_olid.tsv \
     --model_config_path lstm_saved_configs \
     --model_path models/lstm_D3_best_model.pt \
-    --threshold 0.5 \
+    --fig_path outputs/D3_F1_curve.png \
     --val_output_csv outputs/D3_val_preds.csv
 
 # Evaluation script
