@@ -47,7 +47,7 @@ if __name__ == "__main__":
     parser.add_argument("--config", type=str, default=None)
     parser.add_argument("--train_data",type=str, required=True)
     parser.add_argument("--val_data", type=str, required=True)
-    parser.add_argument("--train_tokens_only", type=str)
+    parser.add_argument("--train_tokens_only", action="store_true")
     parser.add_argument("--model_config_path", type=str, required=True)
     parser.add_argument("--model_path", type=str, required=True)
     parser.add_argument("--fig_path", type=str, required=False)

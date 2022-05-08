@@ -425,27 +425,27 @@ if __name__ == "__main__":
         help="path to file containing IDs for development set (line-separated)")
 
     parser.add_argument(
-        "--split_punctuation", type=str, default=None,
+        "--split_punctuation", action="store_true",
         help="whether to split punctuation from the end of tokens"
     )
     parser.add_argument(
-        "--remove_apostraphes", type=str, default=None,
+        "--remove_apostraphes", action="store_true",
         help="whether to remove apostraphe from contractions"
     )
     parser.add_argument(
-        "--remove_hashtags", type=str, default=None,
+        "--remove_hashtags", action="store_true",
         help="whether to remove the # symbol from hashtags"
     )
     parser.add_argument(
-        "--split_emojis", type=bool, default=None,
+        "--split_emojis", action="store_true",
         help="whether to split sequence of emojis by whitespace"
     )
     parser.add_argument(
-        "--convert_negation", type=bool, default=None,
+        "--convert_negation", action="store_true",
         help="whether to convert negated sentences into non-negated forms"
     )
     parser.add_argument(
-        "--convert_emojis", type=bool, default=None,
+        "--convert_emojis", action="store_true",
         help="whether to convert emojis into corresponding text descriptions"
     )    
 

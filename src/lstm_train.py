@@ -32,7 +32,7 @@ if __name__ == "__main__":
     parser.add_argument("--train_data",type=str)
     parser.add_argument("--val_data", type=str)
     parser.add_argument("--model_config_path", type=str)
-    parser.add_argument("--train_tokens_only", type=str)
+    parser.add_argument("--train_tokens_only", action="store_true")
 
     args = parser.parse_args()
     
