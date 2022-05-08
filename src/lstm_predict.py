@@ -24,11 +24,15 @@ import pandas as pd
 import torch
 from torch import Tensor
 from nltk.tokenize import TweetTokenizer
+from sklearn.preprocessing import normalize
+from sklearn.metrics import f1_score
 
 import vocab
 from data import OLIDDataset
 from lstm_model import LSTM
 from lstm_config import LSTMConfig
+
+import matplotlib.pyplot as plt
 
 def get_predictions_from_logits(logits: Tensor, threshold: int=0.5):
     """
@@ -45,7 +49,7 @@ if __name__ == "__main__":
     parser.add_argument("--val_data", type=str, required=True)
     parser.add_argument("--model_config_path", type=str, required=True)
     parser.add_argument("--model_path", type=str, required=True)
-    parser.add_argument("--threshold", type=float, required=False)
+    parser.add_argument("--fig_path", type=str, required=False)
     parser.add_argument("--val_output_csv", type=str, required=True)
     args = parser.parse_args()
 
@@ -66,6 +70,7 @@ if __name__ == "__main__":
         padding_index = int(pickle.load(fp))
 
     embedding_matrix = np.load(embedding_matrix_path)
+    embedding_matrix = normalize(embedding_matrix, axis=1)
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     print(f'Using GPU: {device}')
@@ -90,6 +95,7 @@ if __name__ == "__main__":
     # make vocab + embed matrix
     tokenizer = TweetTokenizer(preserve_case=False, reduce_len=True)
     # we want both training/val vocab here since we are not training the embeddings
+    # vocabulary = vocab.make_vocab(list(train_df['content']), tokenizer.tokenize)
     vocabulary = vocab.make_vocab(list(train_df['content']) + list(val_df['content']), tokenizer.tokenize)
     glove_embeds = embedding_matrix
     embedding_matrix, idx_to_vocab, vocab_to_idx = vocab.get_embedding_matrix(
@@ -115,7 +121,24 @@ if __name__ == "__main__":
             torch.LongTensor(batch["content"]), torch.LongTensor(batch["lengths"])
         )
 
-    preds = get_predictions_from_logits(logits, 0.5)
-    val_df['predicted_label'] = preds
+    best_preds = None
+    best_score = float('-inf')
+    thresholds = np.arange(0, 1.01, 0.01)
+    scores = []
+    for threshold in thresholds:
+        preds = get_predictions_from_logits(logits, threshold)
+        score = f1_score(val_df['label'], preds, average='macro')
+        scores.append(score)
+        if score > best_score:
+            print(f'F1-score for threshold: {threshold}: {score}')
+            best_score = score 
+            best_preds = preds
+
+    plt.plot(thresholds, scores)
+    plt.xlabel('Classification Threshold')
+    plt.ylabel('Macro F1-score')
+    plt.savefig(args.fig_path)
+
+    val_df['predicted_label'] = best_preds
     val_df = val_df[['label', 'predicted_label', 'content']]
     val_df.to_csv(args.val_output_csv)
