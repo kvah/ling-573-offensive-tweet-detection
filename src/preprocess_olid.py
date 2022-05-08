@@ -22,6 +22,7 @@ from spacymoji import Emoji
 
 # download nltk data
 nltk.download('omw-1.4')
+nltk.download('wordnet')
 
 # load spacy model
 nlp = spacy.load("en_core_web_sm", disable = ["lemmatizer", "ner", "textcat"])
