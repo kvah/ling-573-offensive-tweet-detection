@@ -377,15 +377,15 @@ def write_file(data: list, out_file: str) -> None:
         file.write(f"{line['content']}\t{line['label']}\n")
         
     file.close()
-    
-def split_data(data: pd.DataFrame, train_ids_file: str, 
-               val_ids_file: str) -> [pd.DataFrame, pd.DataFrame]:
+
+def split_data(data: list, train_ids_file: str, 
+               val_ids_file: str) -> [list, list]:
     """
     Splits canonical training data into train and dev
 
     Parameters
     ----------
-    data : pd.DataFrame
+    data : list
         OLID data, must include 'id' field
     train_ids_file : str
         line-separated file containing ids corresponding to training set
@@ -394,18 +394,19 @@ def split_data(data: pd.DataFrame, train_ids_file: str,
 
     Returns
     -------
-    train_set : pd.DataFrame
-    test_set : pd.DataFrame
+    train_set : list
+    test_set : list
 
     """
     train_ids = [int(idx.strip()) for idx in open(train_ids_file).readlines()]
     val_ids = [int(idx.strip()) for idx in open(val_ids_file).readlines()]
     
-    train_set = data.loc[train_ids]
-    val_set = data.loc[val_ids]
+    train_set = [data[i] for i in train_ids]
+    val_set = [data[i] for i in val_ids]
     
     return(train_set, val_set)
-        
+
+
 if __name__ == "__main__":
     
     parser = argparse.ArgumentParser(
@@ -456,14 +457,15 @@ if __name__ == "__main__":
     
     data = pd.read_csv(file, sep="\t", header=0, encoding="utf8")
     
+    # preprocess the entire data
+    preprocessed_data = preprocess(data, lang)
+
     # split data if specified
     if args.train_ids != None:
         train_ids = args.train_ids
         val_ids = args.val_ids
-        train, val = split_data(data, train_ids, val_ids)
-        
-        train_preprocessed = preprocess(train, lang)
-        val_preprocessed = preprocess(val, lang)
+
+        train_preprocessed, val_preprocessed = split_data(preprocessed_data, train_ids, val_ids)
 
         train_csv_path = f'data/clean_train_olid.tsv'
         val_csv_path = f'data/clean_val_olid.tsv'
@@ -474,5 +476,4 @@ if __name__ == "__main__":
         write_file(val_preprocessed, val_csv_path)
         
     else:
-        train = preprocess(data, lang)
-        write_file(train, f"data/clean_olid.tsv")
+        write_file(preprocessed_data, f"data/clean_olid.tsv")
