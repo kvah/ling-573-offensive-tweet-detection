@@ -107,7 +107,8 @@ def get_embedding_matrix(word_vecs: dict, vocab: list,
     # pad
     embed_matrix[0] = np.zeros(emb_size, dtype='float32')
     # unk
-    embed_matrix[1] = np.random.uniform(-0.25, 0.25, emb_size) 
+    # embed_matrix[1] = np.random.uniform(-0.25, 0.25, emb_size)
+    embed_matrix[1] = np.zeros(emb_size, dtype='float32')
     
     idx_to_vocab = [PAD,UNK]
     vocab_to_idx[PAD] = 0
