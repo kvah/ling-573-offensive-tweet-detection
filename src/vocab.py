@@ -51,7 +51,7 @@ class Vocabulary:
 
 
 
-def make_vocab(text: list, tokenizer) -> Counter:
+def make_vocab(text: list, tokenizer, min_count: int = 0) -> Counter:
     """
     Creates Counter of words in data
 
@@ -65,6 +65,12 @@ def make_vocab(text: list, tokenizer) -> Counter:
     
     for utterance in text:
         counts.update(tokenizer(utterance))
+        
+    if min_count:
+        all_keys = list(counts.keys())
+        for key in all_keys:
+            if counts[key] <= min_count:
+                del counts[key]
         
     return(counts)
     
@@ -107,8 +113,7 @@ def get_embedding_matrix(word_vecs: dict, vocab: list,
     # pad
     embed_matrix[0] = np.zeros(emb_size, dtype='float32')
     # unk
-    # embed_matrix[1] = np.random.uniform(-0.25, 0.25, emb_size)
-    embed_matrix[1] = np.zeros(emb_size, dtype='float32')
+    embed_matrix[1] = np.zeros(emb_size, dtype='float32') 
     
     idx_to_vocab = [PAD,UNK]
     vocab_to_idx[PAD] = 0
