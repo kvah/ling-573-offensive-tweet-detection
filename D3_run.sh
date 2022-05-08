@@ -18,12 +18,14 @@ python3 src/lstm_train.py \
     --train_data data/clean_train_olid.tsv \
     --val_data data/clean_val_olid.tsv \
     --model_config_path lstm_saved_configs \
+    --train_tokens_only True 
 
 # Run LSTM predictions and generate output
 python3 src/lstm_predict.py \
     --config configs/D3.json\
     --train_data data/clean_train_olid.tsv \
     --val_data data/clean_val_olid.tsv \
+    --train_tokens_only True
     --model_config_path lstm_saved_configs \
     --model_path models/lstm_D3_best_model.pt \
     --fig_path outputs/D3_F1_curve.png \

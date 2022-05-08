@@ -47,6 +47,7 @@ if __name__ == "__main__":
     parser.add_argument("--config", type=str, default=None)
     parser.add_argument("--train_data",type=str, required=True)
     parser.add_argument("--val_data", type=str, required=True)
+    parser.add_argument("--train_tokens_only", type=str)
     parser.add_argument("--model_config_path", type=str, required=True)
     parser.add_argument("--model_path", type=str, required=True)
     parser.add_argument("--fig_path", type=str, required=False)
@@ -94,9 +95,10 @@ if __name__ == "__main__":
 
     # make vocab + embed matrix
     tokenizer = TweetTokenizer(preserve_case=False, reduce_len=True)
-    # we want both training/val vocab here since we are not training the embeddings
-    # vocabulary = vocab.make_vocab(list(train_df['content']), tokenizer.tokenize)
-    vocabulary = vocab.make_vocab(list(train_df['content']) + list(val_df['content']), tokenizer.tokenize)
+    if args.train_tokens_only:
+        vocabulary = vocab.make_vocab(list(train_df['content']), tokenizer.tokenize)
+    else:
+        vocabulary = vocab.make_vocab(list(train_df['content']) + list(val_df['content']), tokenizer.tokenize)
     glove_embeds = embedding_matrix
     embedding_matrix, idx_to_vocab, vocab_to_idx = vocab.get_embedding_matrix(
         glove_embeds, vocabulary)

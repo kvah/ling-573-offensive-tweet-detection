@@ -32,6 +32,7 @@ if __name__ == "__main__":
     parser.add_argument("--train_data",type=str)
     parser.add_argument("--val_data", type=str)
     parser.add_argument("--model_config_path", type=str)
+    parser.add_argument("--train_tokens_only", type=str)
 
     args = parser.parse_args()
     
@@ -55,8 +56,10 @@ if __name__ == "__main__":
     
     # make vocab + embed matrix
     tokenizer = TweetTokenizer(preserve_case=False, reduce_len=True)
-    # vocabulary = vocab.make_vocab(list(train_df['content']), tokenizer.tokenize)
-    vocabulary = vocab.make_vocab(list(train_df['content']) + list(val_df['content']), tokenizer.tokenize)
+    if args.train_tokens_only:
+        vocabulary = vocab.make_vocab(list(train_df['content']), tokenizer.tokenize)
+    else:
+        vocabulary = vocab.make_vocab(list(train_df['content']) + list(val_df['content']), tokenizer.tokenize)
     glove_embeds = vocab.load_glove_vectors(config.glove_embeds)
     embedding_matrix, idx_to_vocab, vocab_to_idx = vocab.get_embedding_matrix(glove_embeds, vocabulary)
     all_vocab = vocab.Vocabulary(idx_to_vocab, vocab_to_idx)
