@@ -4,10 +4,10 @@
   "embedding_dim": 200,
   "freeze_embeds": false,
   "glove_embeds": "./data/glove.twitter.27B.200d.w2vformat.txt",
-  "hidden_dim": 1000,
+  "hidden_dim": 500,
   "l2": 0.0001,
-  "lr": 5e-05,
+  "lr": 6e-05,
   "num_epochs": 100,
-  "num_layers": 1,
+  "num_layers": 4,
   "seed": 11
 }
