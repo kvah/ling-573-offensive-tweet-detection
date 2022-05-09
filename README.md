@@ -48,7 +48,10 @@ conda install pytorch torchvision cudatoolkit=10.2 -c pytorch --force-reinstall
 condor_submit D3.cmd
 ```
 
-Note: For the purposes of this deliverable, preprocessing and training are commented out from the main script (`D3_run.sh`). Occasionally, the prediction script (`src/lstm_predict.py`) would cause the condor job to get stuck, which we started experiencing on the day of the deadline: 5/8/22. If this happens, running the bash script locally instead of through a condor job should work.
+**Important Notes**
+- For the purposes of this deliverable, preprocessing and training are commented out from the main script (`D3_run.sh`). 
+- Occasionally, the prediction script (`src/lstm_predict.py`) would cause the condor job to get stuck, which we started experiencing on the day of the deadline: 5/8/22. If this happens, running the bash script locally instead of through the condor job should work.
+
 
 ```
 ./D3_run.sh
