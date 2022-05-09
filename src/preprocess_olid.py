@@ -20,6 +20,10 @@ from nltk.wsd import lesk
 from nltk.corpus import wordnet as wn
 from spacymoji import Emoji
 
+import time
+
+start_time = time.time()
+
 # download nltk data
 nltk.download('omw-1.4')
 nltk.download('wordnet')
@@ -477,3 +481,5 @@ if __name__ == "__main__":
         
     else:
         write_file(preprocessed_data, f"data/clean_olid.tsv")
+
+    print(f'Preprocessing Time Elapsed: {time.time() - start_time} seconds')

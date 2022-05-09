@@ -18,6 +18,7 @@ import pandas as pd
 
 from tqdm import tqdm
 from nltk.tokenize import TweetTokenizer
+import time
 from time import time
 
 import vocab
@@ -26,6 +27,8 @@ from lstm_model import LSTM
 from lstm_config import LSTMConfig
 
 if __name__ == "__main__":    
+    start_time = time.time()
+
     # argparse logic
     parser = argparse.ArgumentParser()
     parser.add_argument("--config", type=str, default=None)
@@ -188,3 +191,5 @@ if __name__ == "__main__":
     print(f'Best model saved to: {best_model_path}')
     
     csv.close()        
+
+    print(f'Training Time Elapsed: {time.time() - start_time} seconds')

@@ -6,7 +6,11 @@ import numpy as np
 import pandas as pd
 from sklearn.metrics import f1_score
 
+import time
+
 if __name__ == "__main__":
+    start_time = time.time() 
+
     # parse arguments
     parser = argparse.ArgumentParser(description="Write Evaluation Score (Macro F1) to output file")
     parser.add_argument("--val_output_csv", type=str, required=True)
@@ -21,3 +25,5 @@ if __name__ == "__main__":
 
     with open(args.output_path, 'w') as fp:
         fp.write(f'Macro F1 Score: {f1_score}')
+
+    print(f'Evaluation Time Elapsed: {time.time() - start_time} seconds')

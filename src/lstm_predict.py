@@ -29,6 +29,8 @@ from data import OLIDDataset
 from lstm_model import LSTM
 from lstm_config import LSTMConfig
 
+import time
+
 def get_predictions_from_logits(logits: Tensor, threshold: int=0.5):
     """
     """
@@ -36,6 +38,8 @@ def get_predictions_from_logits(logits: Tensor, threshold: int=0.5):
     return preds
 
 if __name__ == "__main__":    
+    start_time = time.time()
+
     # argparse logic
     parser = argparse.ArgumentParser()
     parser.add_argument("--config", type=str, default=None)
@@ -117,3 +121,5 @@ if __name__ == "__main__":
     val_df['predicted_label'] = preds
     val_df = val_df[['label', 'predicted_label', 'content']]
     val_df.to_csv(args.val_output_csv)
+
+    print(f'Inference Time Elapsed: {time.time() - start_time} seconds')
