@@ -1,7 +1,7 @@
 #!/bin/sh
 
 source ~/anaconda3/etc/profile.d/conda.sh
-conda activate ../ling-573-group-repo/573_gpu
+conda activate ./573_gpu
 
 # # Preprocess tweets
 # python3 src/preprocess_olid.py \
