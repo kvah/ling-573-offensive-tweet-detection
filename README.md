@@ -13,6 +13,9 @@ An end-to-end system for classifying English tweets as offensive or non-offensiv
 ### Data
 - Added scripts to under/over sample the training data to combat class imbalance
 
+### Embeddings
+- Added emoji2vec embeddings to handle OOV emojis in word2vec
+
 ### Classification
 - Logistic Regression -> Bidirectional LSTM
 - Model hyperparameter tuning
