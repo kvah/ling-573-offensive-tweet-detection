@@ -54,6 +54,10 @@ if __name__ == "__main__":
     parser.add_argument("--val_output_csv", type=str, required=True)
     args = parser.parse_args()
 
+
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    print(f'Using GPU: {device}')
+
     if args.config:
         config = LSTMConfig.from_json(args.config)
     else:
@@ -63,7 +67,6 @@ if __name__ == "__main__":
     vocab_length_path = os.path.join(model_config_path, 'vocab_length.pkl')
     padding_index_path = os.path.join(model_config_path, 'padding_index.pkl')
     embedding_matrix_path = os.path.join(model_config_path, 'embedding_matrix.npy')
-    best_model_path = os.path.join('models', f'lstm_D3_best_model.pt')
 
     with open(vocab_length_path, 'rb') as fp:
         vocab_length = int(pickle.load(fp))
@@ -71,10 +74,6 @@ if __name__ == "__main__":
         padding_index = int(pickle.load(fp))
 
     embedding_matrix = np.load(embedding_matrix_path)
-    embedding_matrix = normalize(embedding_matrix, axis=1)
-
-    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    print(f'Using GPU: {device}')
 
     # Load model with trained params
     model_dict = args.model_path 

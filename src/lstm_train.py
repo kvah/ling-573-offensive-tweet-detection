@@ -36,6 +36,10 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
     
+    # Enable cuda if GPU is available
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    print(f'Using Device: {device}')
+    
     # make config
     if args.config:
         config = LSTMConfig.from_json(args.config)
@@ -90,10 +94,6 @@ if __name__ == "__main__":
 
     # BUILD MODEL
     padding_index = olid_train_data.padding_index
-
-    # Enable cuda if GPU is available
-    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    print(f'Using Device: {device}')
     
     model = LSTM(
         config=config, 

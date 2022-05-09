@@ -22,7 +22,7 @@ python3 src/lstm_train.py \
 
 # Run LSTM predictions and generate output
 python3 src/lstm_predict.py \
-    --config configs/D3.json\
+    --config configs/D3.json \
     --train_data data/clean_train_olid.tsv \
     --val_data data/clean_val_olid.tsv \
     --model_config_path lstm_saved_configs \
