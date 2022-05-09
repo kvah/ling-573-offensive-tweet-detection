@@ -16,7 +16,6 @@ An end-to-end system for classifying English tweets as offensive or non-offensiv
 ### Classification
 - Logistic Regression -> Bidirectional LSTM
 - Model hyperparameter tuning
-- Automatically adjust classification threshold based on highest macro f1-score
 
 ## Instructions
 
@@ -49,12 +48,17 @@ conda install pytorch torchvision cudatoolkit=10.2 -c pytorch --force-reinstall
 condor_submit D3.cmd
 ```
 
+Note: For the purposes of this deliverable, preprocessing and training are commented out from the main script (`D3_run.sh`). Occasionally, the prediction script (`src/lstm_predict.py`) would cause the condor job to get stuck, which we started experiencing on the day of the deadline: 5/8/22. If this happens, running the bash script locally instead of through a condor job should work.
+
+```
+./D3_run.sh
+```
+
 In summary, the pipeline:
 1. Pre-processes OLID data and splits it into train and validation sets.
 2. Converts GloVe embeddings to w2v format.
 3. Converts tweets into variable length sequences based on NLTK's TweetTokenizer
 4. Initializes the weights of a BiLSTM with the pretrained GloVe embeddings
 5. Trains the BiLSTM using the tweet sequences in the training set
-6. Evaluates trained classifier on validation set and outputs results as a .csv file
-
-
+6. Uses trained classifier to predict on validation set and output predictions in `outputs/D3/D3_val_preds.csv`
+7. Saves the final f1-score in `outputs/D3/D3_val_preds.csv` 
