@@ -19,7 +19,6 @@ import pandas as pd
 from tqdm import tqdm
 from nltk.tokenize import TweetTokenizer
 import time
-from time import time
 
 import vocab
 from data import OLIDDataset
@@ -50,7 +49,7 @@ if __name__ == "__main__":
     else:
         # use default values if no config given
         config = LSTMConfig()
-        config_name = str(time())
+        config_name = str(time.time())
 
     # set seed
     random.seed(config.seed)
