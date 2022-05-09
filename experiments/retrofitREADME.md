@@ -1,3 +1,4 @@
+***This code slightly improves the F1 score of the D2 model, but greatly decreases the F1 score of the D3 model so it will not be in the final model.***
 1. Download the semantic retrofitting code here: https://github.com/mfaruqui/retrofitting
 2. Create the conda environment
 
