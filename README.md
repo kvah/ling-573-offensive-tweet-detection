@@ -67,4 +67,4 @@ In summary, the pipeline:
 4. Initializes the weights of a BiLSTM with the pretrained GloVe embeddings
 5. Trains the BiLSTM using the tweet sequences in the training set
 6. Uses trained classifier to predict on validation set and output predictions in `outputs/D3/D3_val_preds.csv`
-7. Saves the final f1-score in `outputs/D3/D3_val_preds.csv` 
+7. Saves the final f1-score in `results/D3_scores.out` 
