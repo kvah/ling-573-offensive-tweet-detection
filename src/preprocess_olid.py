@@ -471,8 +471,8 @@ if __name__ == "__main__":
 
         train_preprocessed, val_preprocessed = split_data(preprocessed_data, train_ids, val_ids)
 
-        train_csv_path = f'data/clean_train_olid.tsv'
-        val_csv_path = f'data/clean_val_olid.tsv'
+        train_csv_path = f'data/clean_train_{args.language}.tsv'
+        val_csv_path = f'data/clean_val_{args.language}.tsv'
 
         print(f"Writing preprocessed training data to: {train_csv_path}")
         print(f"Writing preprocessed validation data to: {val_csv_path}")
@@ -480,6 +480,6 @@ if __name__ == "__main__":
         write_file(val_preprocessed, val_csv_path)
         
     else:
-        write_file(preprocessed_data, f"data/clean_olid.tsv")
+        write_file(preprocessed_data, f"data/clean_{args.language}.tsv")
 
     print(f'Preprocessing Time Elapsed: {time.time() - start_time} seconds')

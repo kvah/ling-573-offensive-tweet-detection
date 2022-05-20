@@ -1,6 +1,6 @@
-Config = finetune_mbert
+Config = finetune_roberta
 Universe = vanilla
-Executable = finetune_pretrained.sh
+Executable = finetune_pretrained_gr.sh
 Output = condor_output/$(Config).out
 Log = condor_output/$(Config).log
 Error = condor_output/$(Config).err

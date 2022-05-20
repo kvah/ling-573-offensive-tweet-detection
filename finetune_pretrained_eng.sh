@@ -12,26 +12,26 @@ python3 src/test_gpu.py
 # Preprocess tweets
 python3 src/preprocess_olid.py \
     --file data/olid-training-v1.0.tsv \
-    --train_ids data/train_ids.txt \
-    --val_ids data/val_ids.txt \
+    --train_ids data/eng_train_ids.txt \
+    --val_ids data/eng_val_ids.txt \
     --split_punctuation \
     --remove_apostraphes \
     --remove_hashtags
 
 # Finetune pretrained model on training data
 python3 src/finetune_pretrained.py \
-    --train_data data/clean_train_olid.tsv \
-    --val_data data/clean_val_olid.tsv \
+    --train_data data/clean_train_english.tsv \
+    --val_data data/clean_val_english.tsv \
     --config configs/${1}.json
 
 # Run finetuned model predictions and generate output
 python3 src/finetune_predict.py \
-    --val_data data/clean_val_olid.tsv \
+    --val_data data/clean_val_english.tsv \
     --config configs/${1}.json \
     --model_path models/${1} \
-    --val_output_csv outputs/D4/D4_val_preds.csv
+    --val_output_csv outputs/D4/D4_english_preds.csv
 
 # Evaluation script
 python3 src/eval.py \
-    --val_output_csv outputs/D4/D4_val_preds.csv \
-    --output_path results/D4_scores.out
+    --val_output_csv outputs/D4/D4_english_preds.csv \
+    --output_path results/D4_english_scores.out
