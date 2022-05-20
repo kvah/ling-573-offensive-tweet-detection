@@ -1,0 +1,7 @@
+{
+    "model": "roberta-base",
+    "batch_size": 4,
+    "lr": 1e-05,
+    "num_epochs": 3,
+    "seed": 11
+}

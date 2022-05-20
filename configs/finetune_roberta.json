@@ -1,7 +1,7 @@
 {
-    "model": "xlm-roberta-base",
+    "model": "roberta-base",
     "batch_size": 4,
-    "lr": 5e-06,
+    "lr": 1e-06,
     "num_epochs": 5,
     "seed": 11
 }
