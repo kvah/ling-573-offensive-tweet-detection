@@ -1,11 +1,21 @@
 """
     Module for pre-processing OLID dataset (Task A)
     
-    To use as a script, execute:
-        python3 preprocess_olid.py --file FILE [--lang LANG] 
-        [--train_ids TRAIN_IDS --val_ids DEV_IDS] [--split_punctuation BOOL]
-        [--remove_apostraphes BOOL] [--remove_hashtags BOOL] [--split_emojis BOOL]
-        [--convert_negation BOOL] [--convert_emojis BOOL]
+    To process English data, execute:
+        python3 preprocess_olid.py --file FILE [--language LANG] 
+        [--train_ids TRAIN_IDS --val_ids DEV_IDS] [--split_punctuation]
+        [--remove_apostraphes] [--remove_hashtags] [--split_emojis]
+        [--convert_negation] [--convert_emojis]
+        
+    To process Greek data, execute:
+        python3 preprocess_olid.py --file FILE --language greek
+        [--train_ids TRAIN_IDS --val_ids DEV_IDS] [--split_punctuation]
+        [--remove_apostraphes] [--remove_hashtags] [--convert_unicode]
+        [--remove_diacritics] [--lemmatize]
+    
+    * Note for processing Greek data: To remoce diacritics, choose either 
+      [--convert_unicode] or [--remove_diacritics]. [--convert_unicode]
+      converts unicode data into ASCII characters, which might result in OOV.
     
 """
 
