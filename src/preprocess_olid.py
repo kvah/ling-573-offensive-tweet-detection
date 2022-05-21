@@ -13,7 +13,7 @@
         [--remove_apostraphes] [--remove_hashtags] [--convert_unicode]
         [--remove_diacritics] [--lemmatize]
     
-    * Note for processing Greek data: To remoce diacritics, choose either 
+    * Note for processing Greek data: To remove diacritics, choose either 
       [--convert_unicode] or [--remove_diacritics]. [--convert_unicode]
       converts unicode data into ASCII characters, which might result in OOV.
     
