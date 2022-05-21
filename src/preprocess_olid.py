@@ -43,6 +43,33 @@ NOT = "NOT"
 # define types
 Example = {"content":str, "label":int}
 
+def lemmatiz_greek(content):
+    """
+    Lemmatize greek tweets
+    
+    Example:
+        tweet: "Πώς τα πάνε οι γυναίκες με το αυτοκίνητο;"
+        new tweet: "πώς ο πάνες ο γυναίκα με ο αυτοκίνητο ;"
+    
+    Parameters
+    ----------
+    content : pd.Series
+        pandas Series containing tweets
+
+    Returns
+    -------
+    content : pd.Series
+        pandas Series containing lemmatized greek weets
+
+    """
+    nlp = spacy.load("el_core_news_sm", disable = ["parser", "ner"])
+    for i, line in enumerate(content):
+        doc = nlp(line)
+        line = " ".join([token.lemma_ for token in doc])
+        content[i] = line
+
+    return content
+
 def convert_unicode(content: pd.Series) -> pd.Series:
     """
     Convert unicode data into ASCII characters
@@ -392,21 +419,25 @@ def preprocess(data: pd.DataFrame, lang: str="english") -> list:
     tweets = data[["tweet", "subtask_a"]]
 
     tweets_copy = tweets['tweet'].copy()
-    # preprocessing tasks
+    # general preprocessing tasks
+    if args.split_punctuation:
+        tweets_copy = split_punctuation(tweets_copy)
+    if args.remove_apostraphes:
+        tweets_copy = remove_apostraphes(tweets_copy)
+    if args.remove_hashtags:
+        tweets_copy = remove_hashtags(tweets_copy)
+    if args.split_emojis:
+        tweets_copy = split_emojis(tweets_copy)
+
+    # language specific preprocessing methods
     if lang == "english":
-        if args.split_punctuation:
-            tweets_copy = split_punctuation(tweets_copy)
-        if args.remove_apostraphes:
-            tweets_copy = remove_apostraphes(tweets_copy)
-        if args.remove_hashtags:
-            tweets_copy = remove_hashtags(tweets_copy)
-        if args.split_emojis:
-            tweets_copy = split_emojis(tweets_copy)
         if args.convert_negation:
             tweets_copy = convert_negation(tweets_copy)
         if args.convert_emojis: # should be the last method being applied
             tweets_copy = convert_emojis(tweets_copy)
     elif lang == "greek":
+        if args.lemmatize:
+            tweets_copy = lemmatiz_greek(tweets_copy)
         if args.convert_unicode:
             tweets_copy = convert_unicode(tweets_copy)
         if args.remove_diacritics:
@@ -518,6 +549,10 @@ if __name__ == "__main__":
     parser.add_argument(
         "--remove_diacritics", action="store_true",
         help="whether to remove diacritics"
+    )
+    parser.add_argument(
+        "--lemmatize", action="store_true",
+        help="whether to lemmatize tweets"
     )
 
     args = parser.parse_args(argv[1:])
