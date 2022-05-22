@@ -22,16 +22,29 @@ python3 src/preprocess_olid.py \
 python3 src/finetune_pretrained.py \
     --train_data data/clean_train_english.tsv \
     --val_data data/clean_val_english.tsv \
-    --config configs/${1}.json
+    --config configs/${1}.json \
+    --train_mode english
 
-# Run finetuned model predictions and generate output
+# Run finetuned model predictions on Greek data and generate output
+python3 src/finetune_predict.py \
+    --val_data data/clean_val_greek.tsv \
+    --config configs/${1}.json \
+    --model_path models/${1}_english \
+    --val_output_csv outputs/D4/D4_greek_preds_english-only.csv
+
+# Evaluation script (Greek)
+python3 src/eval.py \
+    --val_output_csv outputs/D4/D4_greek_preds_english-only.csv \
+    --output_path results/D4_greek_scores_english-only.out
+
+# Run finetuned model predictions on English data and generate output
 python3 src/finetune_predict.py \
     --val_data data/clean_val_english.tsv \
     --config configs/${1}.json \
-    --model_path models/${1} \
-    --val_output_csv outputs/D4/D4_english_preds.csv
+    --model_path models/${1}_english \
+    --val_output_csv outputs/D4/D4_english_preds_english-only.csv
 
-# Evaluation script
+# Evaluation script (English)
 python3 src/eval.py \
-    --val_output_csv outputs/D4/D4_english_preds.csv \
-    --output_path results/D4_english_scores.out
+    --val_output_csv outputs/D4/D4_english_preds_english-only.csv \
+    --output_path results/D4_english_scores_english-only.out

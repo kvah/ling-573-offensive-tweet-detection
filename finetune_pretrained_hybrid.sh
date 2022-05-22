@@ -31,13 +31,14 @@ python3 src/preprocess_olid.py \
 python3 src/finetune_pretrained.py \
     --train_data data/clean_train_greek.tsv data/clean_train_english.tsv \
     --val_data data/clean_val_greek.tsv data/clean_val_english.tsv \
-    --config configs/${1}.json
+    --config configs/${1}.json \
+    --train_mode hybrid
 
 # Run finetuned model predictions on Greek data and generate output
 python3 src/finetune_predict.py \
     --val_data data/clean_val_greek.tsv \
     --config configs/${1}.json \
-    --model_path models/${1} \
+    --model_path models/${1}_hybrid \
     --val_output_csv outputs/D4/D4_greek_preds_hybrid.csv
 
 # Evaluation script (Greek)
@@ -49,7 +50,7 @@ python3 src/eval.py \
 python3 src/finetune_predict.py \
     --val_data data/clean_val_english.tsv \
     --config configs/${1}.json \
-    --model_path models/${1} \
+    --model_path models/${1}_hybrid \
     --val_output_csv outputs/D4/D4_english_preds_hybrid.csv
 
 # Evaluation script (English)
