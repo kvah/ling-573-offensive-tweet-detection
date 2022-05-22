@@ -1,11 +1,21 @@
 """
     Module for pre-processing OLID dataset (Task A)
     
-    To use as a script, execute:
-        python3 preprocess_olid.py --file FILE [--lang LANG] 
-        [--train_ids TRAIN_IDS --val_ids DEV_IDS] [--split_punctuation BOOL]
-        [--remove_apostraphes BOOL] [--remove_hashtags BOOL] [--split_emojis BOOL]
-        [--convert_negation BOOL] [--convert_emojis BOOL]
+    To process English data, execute:
+        python3 preprocess_olid.py --file FILE [--language LANG] 
+        [--train_ids TRAIN_IDS --val_ids DEV_IDS] [--split_punctuation]
+        [--remove_apostraphes] [--remove_hashtags] [--split_emojis]
+        [--convert_negation] [--convert_emojis]
+        
+    To process Greek data, execute:
+        python3 preprocess_olid.py --file FILE --language greek
+        [--train_ids TRAIN_IDS --val_ids DEV_IDS] [--split_punctuation]
+        [--remove_apostraphes] [--remove_hashtags] [--convert_unicode]
+        [--remove_diacritics] [--lemmatize]
+    
+    * Note for processing Greek data: To remove diacritics, choose either 
+      [--convert_unicode] or [--remove_diacritics]. [--convert_unicode]
+      converts unicode data into ASCII characters, which might result in OOV.
     
 """
 
@@ -19,6 +29,8 @@ import nltk
 from nltk.wsd import lesk
 from nltk.corpus import wordnet as wn
 from spacymoji import Emoji
+import unidecode
+import unicodedata
 
 import time
 
@@ -40,6 +52,84 @@ NOT = "NOT"
 
 # define types
 Example = {"content":str, "label":int}
+
+def lemmatiz_greek(content):
+    """
+    Lemmatize greek tweets
+    
+    Example:
+        tweet: "Πώς τα πάνε οι γυναίκες με το αυτοκίνητο;"
+        new tweet: "πώς ο πάνες ο γυναίκα με ο αυτοκίνητο ;"
+    
+    Parameters
+    ----------
+    content : pd.Series
+        pandas Series containing tweets
+
+    Returns
+    -------
+    content : pd.Series
+        pandas Series containing lemmatized greek weets
+
+    """
+    nlp = spacy.load("el_core_news_sm", disable = ["parser", "ner"])
+    for i, line in enumerate(content):
+        doc = nlp(line)
+        line = " ".join([token.lemma_ for token in doc])
+        content[i] = line
+
+    return content
+
+def convert_unicode(content: pd.Series) -> pd.Series:
+    """
+    Convert unicode data into ASCII characters
+    
+    Example:
+        tweet: "@USER Οι μουσουλμάνες που τις βιάζουν έτσι κ α..."
+        new tweet: "@USER Oi mousoulmanes pou tis biazoun etsi k a..."
+    
+    Parameters
+    ----------
+    content : pd.Series
+        pandas Series containing tweets
+
+    Returns
+    -------
+    content : pd.Series
+        pandas Series containing tweets with characters converted into ASCII characters
+
+    """
+
+    for i, line in enumerate(content):
+        content[i] = unidecode.unidecode(line)
+
+    return content
+
+def remove_diacritics(content: pd.Series) -> pd.Series:
+    """
+    Remove diacritics
+    
+    Example:
+        tweet: "@USER Οι μουσουλμάνες που τις βιάζουν έτσι κ α..."
+        new tweet: "@USER Οι μουσουλμανες που τις βιαζουν ετσι κ α..."
+    
+    Parameters
+    ----------
+    content : pd.Series
+        pandas Series containing tweets
+
+    Returns
+    -------
+    content : pd.Series
+        pandas Series containing tweets without diacritics
+
+    """
+
+    for i, line in enumerate(content):
+        line = "".join(ch for ch in unicodedata.normalize('NFKD', line) if not unicodedata.combining(ch))
+        content[i] = line
+
+    return content
 
 def emoji2des(line: str) -> str:
     """
@@ -339,7 +429,7 @@ def preprocess(data: pd.DataFrame, lang: str="english") -> list:
     tweets = data[["tweet", "subtask_a"]]
 
     tweets_copy = tweets['tweet'].copy()
-    # preprocessing tasks
+    # general preprocessing tasks
     if args.split_punctuation:
         tweets_copy = split_punctuation(tweets_copy)
     if args.remove_apostraphes:
@@ -348,12 +438,22 @@ def preprocess(data: pd.DataFrame, lang: str="english") -> list:
         tweets_copy = remove_hashtags(tweets_copy)
     if args.split_emojis:
         tweets_copy = split_emojis(tweets_copy)
-    if args.convert_negation:
-        tweets_copy = convert_negation(tweets_copy)
-    if args.convert_emojis: # should be the last method being applied
-        tweets_copy = convert_emojis(tweets_copy)
+
+    # language specific preprocessing methods
+    if lang == "english":
+        if args.convert_negation:
+            tweets_copy = convert_negation(tweets_copy)
+        if args.convert_emojis: # should be the last method being applied
+            tweets_copy = convert_emojis(tweets_copy)
+    elif lang == "greek":
+        if args.lemmatize:
+            tweets_copy = lemmatiz_greek(tweets_copy)
+        if args.convert_unicode:
+            tweets_copy = convert_unicode(tweets_copy)
+        if args.remove_diacritics:
+            tweets_copy = remove_diacritics(tweets_copy)
+
     tweets['tweet'] = tweets_copy
-    
     data_list = []
     
     for index, row in tweets.iterrows():
@@ -451,7 +551,19 @@ if __name__ == "__main__":
     parser.add_argument(
         "--convert_emojis", action="store_true",
         help="whether to convert emojis into corresponding text descriptions"
-    )    
+    )
+    parser.add_argument(
+        "--convert_unicode", action="store_true",
+        help="whether to convert unicode data into ascii characters"
+    )
+    parser.add_argument(
+        "--remove_diacritics", action="store_true",
+        help="whether to remove diacritics"
+    )
+    parser.add_argument(
+        "--lemmatize", action="store_true",
+        help="whether to lemmatize tweets"
+    )
 
     args = parser.parse_args(argv[1:])
     lang = args.language
