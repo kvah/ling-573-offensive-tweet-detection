@@ -24,6 +24,6 @@ if __name__ == "__main__":
     print(f'Macro F1 Score: {f1_score}')
 
     with open(args.output_path, 'w') as fp:
-        fp.write(f'Macro F1 Score: {f1_score}')
+        fp.write(f'Macro F1 Score for {args.val_output_csv}: {f1_score}')
 
     print(f'Evaluation Time Elapsed: {time.time() - start_time} seconds')

@@ -33,6 +33,7 @@ if __name__ == '__main__':
     parser.add_argument("--train_data", type=str, nargs='+', required=True)
     parser.add_argument("--val_data", type=str, nargs='+', required=True)
     parser.add_argument("--config", type=str, required=True)
+    parser.add_argument("--train_mode", type=str, default="english")
 
     args = parser.parse_args(sys.argv[1:])
     
@@ -162,6 +163,6 @@ if __name__ == '__main__':
 
     # Save fine-tuned model
     os.makedirs('models', exist_ok=True)
-    best_model.save_pretrained(f'models/{config_name}')
+    best_model.save_pretrained(f'models/{config_name}_{args.train_mode}')
 
     print(f'Time Elapsed (Finetuning): {time.time() - start_time}')
