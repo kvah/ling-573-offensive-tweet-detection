@@ -14,7 +14,8 @@ class Config():
         num_epochs: int = 5,
         batch_size: int = 4,
         lr: float = 5e-5,
-        num_samples: int = None
+        num_samples: int = None,
+        num_warmup_steps = 0
     ):
         self.model = model
         self.seed = seed
@@ -22,6 +23,7 @@ class Config():
         self.batch_size = batch_size
         self.lr = lr
         self.num_samples = num_samples
+        self.num_warmup_steps = num_warmup_steps
         
     @classmethod
     def from_json(cls, json_file: str):

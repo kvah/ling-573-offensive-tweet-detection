@@ -1,6 +1,6 @@
 {
-    "model": "roberta-base",
-    "batch_size": 4,
+    "model": "xlm-roberta-large",
+    "batch_size": 2,
     "lr": 5e-06,
     "num_epochs": 5,
     "seed": 11

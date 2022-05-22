@@ -75,7 +75,10 @@ if __name__ == '__main__':
     num_epochs = config.num_epochs
     num_training_steps = num_epochs * len(train_dataloader)
     lr_scheduler = get_scheduler(
-        name="linear", optimizer=optimizer, num_warmup_steps=0, num_training_steps=num_training_steps
+        name="linear", 
+        optimizer=optimizer, 
+        num_warmup_steps=config.num_warmup_steps, 
+        num_training_steps=num_training_steps
     )
     metric = load_metric("f1")
 
