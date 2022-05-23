@@ -53,7 +53,7 @@ if __name__ == '__main__':
         train_sets.append(train_set)
         
     # concatenate and shuffle all training data
-    train_df = pd.concat(train_sets, ignore_index=True).sample(frac=1)
+    train_df = pd.concat(train_sets, ignore_index=True).sample(frac=1, random_state=config.seed)
     # convert to huggingface dataset
     train_dataset = Dataset.from_pandas(train_df)
     
