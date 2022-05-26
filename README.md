@@ -1,4 +1,5 @@
 # ling-573-group-repo
+## Task Description
 An end-to-end system for classifying English tweets as offensive or non-offensive, based on the [OffensEval 2019 Shared Task](https://sites.google.com/site/offensevalsharedtask/offenseval2019) (subtask A).
 
 ## Changes in D3
