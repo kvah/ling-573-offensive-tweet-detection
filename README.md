@@ -8,24 +8,21 @@ An end-to-end system for classifying English tweets as offensive or non-offensiv
 An end-to-end system for classifying Greek tweets as offensive or non-offensive, based on the [OffensEval 2020 Shared Task](https://sites.google.com/site/offensevalsharedtask/results-and-paper-submission) (subtask A).
 
 
-## Changes in D3
+## Changes in D4
 
-### Additional Preprocessing
-- Split punctuation from words
-- Remove apostraphes from contractions
-- Remove hashtags from tweets
-- Detect negated phrases and replace them with their antonyms
-- Convert Emojis to their [spacymoji](https://spacy.io/universe/project/spacymoji) text description
+### Primary Task
+#### Embeddings and Classification
+- GloVe embedding + Bidirectional LSTM -> RoBERTa-base model
+- Model finetuning and hypertuning
 
-### Data
-- Added scripts to under/over sample the training data to combat class imbalance
-
-### Embeddings
-- Added emoji2vec embeddings to handle OOV emojis in word2vec
-
-### Classification
-- Logistic Regression -> Bidirectional LSTM
-- Model hyperparameter tuning
+### Adaptation Task
+#### Additional Preproccessing
+- Removing diacritics
+- Convert unicode data into ASCII characters
+- Lemmatization
+#### Embeddings and Classification
+- XML-RoBERTa model
+- Model finetuning and hypertuning
 
 ## Instructions
 
