@@ -1,6 +1,12 @@
 # ling-573-group-repo
 ## Task Description
+
+### Primary Task
 An end-to-end system for classifying English tweets as offensive or non-offensive, based on the [OffensEval 2019 Shared Task](https://sites.google.com/site/offensevalsharedtask/offenseval2019) (subtask A).
+
+### Adaptation Task
+An end-to-end system for classifying Greek tweets as offensive or non-offensive, based on the [OffensEval 2020 Shared Task](https://sites.google.com/site/offensevalsharedtask/results-and-paper-submission) (subtask A).
+
 
 ## Changes in D3
 
