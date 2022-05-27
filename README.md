@@ -37,7 +37,7 @@ sh Anaconda3-2021.11-Linux-x86_64.sh
 #### Download best models for primary and adaptation tasks
 - Download the [best model for primary task](https://drive.google.com/drive/u/2/folders/1KYS1PpH_jKT4wz94Kut1H7wnGopEI5Rb) and place the entire folder (containing `config.json` and `pytorch.bin`) in `models`
 - Download the [best model for adaptation task](https://drive.google.com/drive/folders/1-BlV1p9GvdiQblCWJ_M-yjh4nszmYypw) and place the entire folder (containing `config.json` and `pytorch.bin`) in `models`
-- Note that the model for *primary task* (the folder containing `config.json` and `pytorch.bin`) should be named `finetune_roberta` and the model for *adaptation task* should be named `finetune_xlmr_large_final_greek`
+- Note that the model for **primary task** (the folder containing `config.json` and `pytorch.bin`) should be named `finetune_roberta` and the model for **adaptation task** should be named `finetune_xlmr_large_final_greek`
 <!-- Download the [pre-trained Twitter Glove2Vec Embeddings](https://nlp.stanford.edu/projects/glove/) and place `glove.twitter.27B.200d.txt` in `data/`. 
 Then, convert it to Word2Vec format so it can be loaded to Gensim:
 ```
@@ -68,23 +68,24 @@ conda install pytorch torchvision cudatoolkit=10.2 -c pytorch --force-reinstall
 ### 3. Run the Condor Script
 
 ```
-condor_submit D3.cmd
+condor_submit D4.cmd
 ```
 
-**Important Notes**
+<!-- **Important Notes**
 - For the purposes of this deliverable, preprocessing and training are commented out from the main script (`D3_run.sh`). 
 - Occasionally, the prediction script (`src/lstm_predict.py`) would cause the condor job to get stuck, which we started experiencing on the day of the deadline: 5/8/22. If this happens, running the bash script locally instead of through the condor job should work.
 
 
 ```
 ./D3_run.sh
-```
+``` -->
 
 In summary, the pipeline:
-1. Pre-processes OLID data and splits it into train and validation sets.
-2. Converts GloVe embeddings to w2v format.
-3. Converts tweets into variable length sequences based on NLTK's TweetTokenizer
-4. Initializes the weights of a BiLSTM with the pretrained GloVe embeddings
+1. Pre-processes SOLID Greek data.
+2. Finetunes pretained model (XML-RoBERTa) on Greek training data.
+3. Runs finetuned model predictions on Greek data and save output predictions in `outputs/D4/adaptation/evaltest/D4_preds.csv`
+4. Saves the final f1-score in `results/D4/adaptation/evaltest/D4_scores.out`
+<!-- 4. Initializes the weights of a BiLSTM with the pretrained GloVe embeddings
 5. Trains the BiLSTM using the tweet sequences in the training set
 6. Uses trained classifier to predict on validation set and output predictions in `outputs/D3/D3_val_preds.csv`
-7. Saves the final f1-score in `results/D3_scores.out` 
+7. Saves the final f1-score in `results/D3_scores.out`  -->
