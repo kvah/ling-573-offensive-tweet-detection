@@ -64,6 +64,7 @@ conda config --env --set channel_priority strict
 conda env update --prefix ./573_gpu --file env.yml --prune
 conda install pytorch torchvision cudatoolkit=10.2 -c pytorch --force-reinstall
 ```
+Note: Creating or updating the conda environment can sometimes take a while (30-60 min)
 
 ### 3. Run the Condor Script
 
