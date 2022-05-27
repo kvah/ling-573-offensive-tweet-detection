@@ -34,20 +34,32 @@ wget https://repo.anaconda.com/archive/Anaconda3-2021.11-Linux-x86_64.sh
 sh Anaconda3-2021.11-Linux-x86_64.sh
 ```
 
-Download the [pre-trained Twitter Glove2Vec Embeddings](https://nlp.stanford.edu/projects/glove/) and place `glove.twitter.27B.200d.txt` in `data/`. 
+<!-- Download the [pre-trained Twitter Glove2Vec Embeddings](https://nlp.stanford.edu/projects/glove/) and place `glove.twitter.27B.200d.txt` in `data/`. 
 Then, convert it to Word2Vec format so it can be loaded to Gensim:
 ```
 python -m gensim.scripts.glove2word2vec --input data/glove.twitter.27B.200d.txt --output data/glove.twitter.27B.200d.w2vformat.txt
-```
+``` -->
 
 ### 2. Create the conda environment and run the following commands
 
+- If the conda environment was not created previously, run the following:
 ``` 
-conda env create -f env.yml --prefix ./573_gpu
+conda create --prefix ./573_gpu python=3.8
 conda activate ./573_gpu
+conda config --env --add channels conda-forge
+conda config --env --set channel_priority strict
+conda env update --prefix ./573_gpu --file env.yml --prune
 conda install pytorch torchvision cudatoolkit=10.2 -c pytorch --force-reinstall
 ```
 
+- If the conda environment exists and you want to update the dependencies, run the following:
+``` 
+conda activate ./573_gpu
+conda config --env --add channels conda-forge
+conda config --env --set channel_priority strict
+conda env update --prefix ./573_gpu --file env.yml --prune
+conda install pytorch torchvision cudatoolkit=10.2 -c pytorch --force-reinstall
+```
 
 ### 3. Run the Condor Script
 
