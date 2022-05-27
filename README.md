@@ -27,13 +27,17 @@ An end-to-end system for classifying Greek tweets as offensive or non-offensive,
 ## Instructions
 
 ### 1. Prerequisites
-
+#### Install Anaconda
 If necessary, download and install anaconda by running the following commands:
 ```
 wget https://repo.anaconda.com/archive/Anaconda3-2021.11-Linux-x86_64.sh
 sh Anaconda3-2021.11-Linux-x86_64.sh
 ```
 
+#### Download best models for primary and adaptation tasks
+- Download the [best model for primary task](https://drive.google.com/drive/u/2/folders/1KYS1PpH_jKT4wz94Kut1H7wnGopEI5Rb) and place the entire folder (containing `config.json` and `pytorch.bin`) in `models`
+- Download the [best model for adaptation task](https://drive.google.com/drive/folders/1-BlV1p9GvdiQblCWJ_M-yjh4nszmYypw) and place the entire folder (containing `config.json` and `pytorch.bin`) in `models`
+- Note that the model for *primary task* (the folder containing `config.json` and `pytorch.bin`) should be named `finetune_roberta` and the model for *adaptation task* should be named `finetune_xlmr_large_final_greek`
 <!-- Download the [pre-trained Twitter Glove2Vec Embeddings](https://nlp.stanford.edu/projects/glove/) and place `glove.twitter.27B.200d.txt` in `data/`. 
 Then, convert it to Word2Vec format so it can be loaded to Gensim:
 ```
