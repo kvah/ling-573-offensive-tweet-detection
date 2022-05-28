@@ -68,7 +68,7 @@ Note: Creating or updating the conda environment can sometimes take a while (30-
 condor_submit D4.cmd
 ```
 
-Note: 
+**Notes:** 
 - For the purposes of this deliverable, preprocessing and training are commented out from the main script (`D4_run.sh`).
 - The condor script activates an existing conda environment. No additional action needed to create conda environment.
 
