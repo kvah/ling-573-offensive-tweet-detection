@@ -35,7 +35,7 @@ sh Anaconda3-2021.11-Linux-x86_64.sh
 ```
 
 #### Download best models for primary and adaptation tasks
-- Download the [best model for primary task](https://drive.google.com/drive/u/2/folders/1KYS1PpH_jKT4wz94Kut1H7wnGopEI5Rb) and place the entire folder (containing `config.json` and `pytorch.bin`) in `models/`
+- (not needed for `D4.cmd`) Download the [best model for primary task](https://drive.google.com/drive/u/2/folders/1KYS1PpH_jKT4wz94Kut1H7wnGopEI5Rb) and place the entire folder (containing `config.json` and `pytorch.bin`) in `models/`
 - Download the [best model for adaptation task](https://drive.google.com/drive/folders/1-BlV1p9GvdiQblCWJ_M-yjh4nszmYypw) and place the entire folder (containing `config.json` and `pytorch.bin`) in `models/`
 - Note that the model for **primary task** (the folder containing `config.json` and `pytorch.bin`) should be named `finetune_roberta` and the model for **adaptation task** should be named `finetune_xlmr_large_final_greek`
 
