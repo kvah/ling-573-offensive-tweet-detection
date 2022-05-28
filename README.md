@@ -39,7 +39,7 @@ sh Anaconda3-2021.11-Linux-x86_64.sh
 - Download the [best model for adaptation task](https://drive.google.com/drive/folders/1-BlV1p9GvdiQblCWJ_M-yjh4nszmYypw) and place the entire folder (containing `config.json` and `pytorch.bin`) in `models/`
 - Note that the model for **primary task** (the folder containing `config.json` and `pytorch.bin`) should be named `finetune_roberta` and the model for **adaptation task** should be named `finetune_xlmr_large_final_greek`
 
-Following is an example of the directory structure of the model for the **adaptation task**:
+- Following is an example of the directory structure of the model for the **adaptation task**:
 ```
 models/finetune_xlmr_large_final_greek
 models/finetune_xlmr_large_final_greek/config.json
