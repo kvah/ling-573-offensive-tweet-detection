@@ -3,19 +3,25 @@
     
     To process English data, execute:
         python3 preprocess_olid.py --file FILE [--language LANG] 
-        [--train_ids TRAIN_IDS --val_ids DEV_IDS] [--split_punctuation]
-        [--remove_apostraphes] [--remove_hashtags] [--split_emojis]
-        [--convert_negation] [--convert_emojis]
+        [--all_train] [--all_test] [--train_ids TRAIN_IDS --val_ids DEV_IDS] 
+        [--split_punctuation] [--remove_apostraphes] [--remove_hashtags] 
+        [--split_emojis] [--convert_negation] [--convert_emojis]
         
     To process Greek data, execute:
         python3 preprocess_olid.py --file FILE --language greek
-        [--train_ids TRAIN_IDS --val_ids DEV_IDS] [--split_punctuation]
-        [--remove_apostraphes] [--remove_hashtags] [--convert_unicode]
-        [--remove_diacritics] [--lemmatize]
+        [--all_train] [--all_test] [--train_ids TRAIN_IDS --val_ids DEV_IDS] 
+        [--split_punctuation] [--remove_apostraphes] [--remove_hashtags] 
+        [--convert_unicode] [--remove_diacritics] [--lemmatize]
     
     * Note for processing Greek data: To remove diacritics, choose either 
       [--convert_unicode] or [--remove_diacritics]. [--convert_unicode]
       converts unicode data into ASCII characters, which might result in OOV.
+      
+    * [--all_train] means the input file is the entire training data and no
+       training/dev id is provided
+       
+    * [--all_test] means the input file is the entire test data and no
+       training/dev id is provided
     
 """
 
