@@ -529,6 +529,14 @@ if __name__ == "__main__":
         help="path to file containing IDs for development set (line-separated)")
 
     parser.add_argument(
+        "--all_train", action="store_true",
+        help="whether the input file is the entire training data"
+    )
+    parser.add_argument(
+        "--all_test", action="store_true",
+        help="whether the input file is the entire test data"
+    )
+    parser.add_argument(
         "--split_punctuation", action="store_true",
         help="whether to split punctuation from the end of tokens"
     )
@@ -592,6 +600,9 @@ if __name__ == "__main__":
         write_file(val_preprocessed, val_csv_path)
         
     else:
-        write_file(preprocessed_data, f"data/clean_{args.language}.tsv")
-
+        if args.all_train:
+            write_file(preprocessed_data, f"data/clean_all_train_{args.language}.tsv")
+        elif args.all_test:
+            write_file(preprocessed_data, f"data/clean_all_test_{args.language}.tsv")
+            
     print(f'Preprocessing Time Elapsed: {time.time() - start_time} seconds')
