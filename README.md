@@ -70,11 +70,11 @@ condor_submit D4.cmd
 
 **Notes:** 
 - For the purposes of this deliverable, preprocessing and training are commented out from the main script (`D4_run.sh`).
-- The condor script activates an existing conda environment. No additional action needed to create conda environment.
+- The condor script activates an existing conda environment on patas. No need to create/update the conda environment.
 
 
 In summary, the pipeline:
-1. Pre-processes SOLID Greek data.
+1. Pre-processes SOLID Greek training and test data.
 2. Finetunes pretained model (XML-RoBERTa) on Greek training data.
 3. Runs finetuned model predictions on Greek data and save output predictions in `outputs/D4/adaptation/evaltest/D4_preds.csv`
 4. Saves the final f1-score in `results/D4/adaptation/evaltest/D4_scores.out`
