@@ -76,5 +76,5 @@ condor_submit D4.cmd
 In summary, the pipeline:
 1. Pre-processes SOLID Greek training and test data.
 2. Finetunes pretained model (XML-RoBERTa) on Greek training data.
-3. Runs finetuned model predictions on Greek data and save output predictions in `outputs/D4/adaptation/evaltest/D4_preds.csv`
+3. Runs finetuned model predictions on Greek data and save output predictions in `outputs/D4/adaptation/evaltest/D4_greek_preds.csv`
 4. Saves the final f1-score in `results/D4/adaptation/evaltest/D4_scores.out`
