@@ -21,7 +21,7 @@ An end-to-end system for classifying Greek tweets as offensive or non-offensive,
 - Convert unicode data into ASCII characters
 - Lemmatization
 #### Embeddings and Classification
-- XML-RoBERTa model
+- XLM-RoBERTa model
 - Model finetuning and hypertuning
 
 ## Instructions
@@ -38,6 +38,7 @@ sh Anaconda3-2021.11-Linux-x86_64.sh
 - (not needed for `D4.cmd`) Download the [best model for primary task](https://drive.google.com/drive/u/2/folders/1KYS1PpH_jKT4wz94Kut1H7wnGopEI5Rb) and place the entire folder (containing `config.json` and `pytorch.bin`) in `models/`
 - Download the [best model for adaptation task](https://drive.google.com/drive/folders/1-BlV1p9GvdiQblCWJ_M-yjh4nszmYypw) and place the entire folder (containing `config.json` and `pytorch.bin`) in `models/`
 - Note that the model for **primary task** (the folder containing `config.json` and `pytorch.bin`) should be named `finetune_roberta` and the model for **adaptation task** should be named `finetune_xlmr_large_final_greek`
+- Both models should be accessible to anyone logged into an UW Google account.
 
 - Following is an example of the directory structure of the model for the **adaptation task**:
 ```
@@ -82,6 +83,6 @@ condor_submit D4.cmd
 
 In summary, the pipeline:
 1. Pre-processes SOLID Greek training and test data.
-2. Finetunes pretained model (XML-RoBERTa) on Greek training data.
+2. Finetunes pretained model (XLM-RoBERTa) on Greek training data.
 3. Runs finetuned model predictions on Greek data and save output predictions in `outputs/D4/adaptation/evaltest/D4_greek_preds.csv`
 4. Saves the final f1-score in `results/D4/adaptation/evaltest/D4_scores.out`
