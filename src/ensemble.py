@@ -36,7 +36,7 @@ if __name__ == '__main__':
     parser.add_argument("--test_data", type=str, required=True)
     parser.add_argument("--configs", type=str, nargs='+', required=True)
     parser.add_argument("--models", type=str, nargs='+', required=True)
-    parser.add_argument("--val_output_csv", type=str, required=True)
+    parser.add_argument("--test_output_csv", type=str, required=True)
 
     args = parser.parse_args(sys.argv[1:])
 
@@ -152,3 +152,10 @@ if __name__ == '__main__':
     score = metric.compute(average="macro")
     print(f'Stacked Ensemble Test Macro F1 Score: {score}')
 
+    test_df['predicted_label'] = test_preds
+    test_df['label'] = test_df['labels']
+    test_df = test_df[['label', 'predicted_label', 'content']]
+
+    output_dir = os.path.dirname(args.test_output_csv)
+    os.makedirs(output_dir, exist_ok=True)
+    test_df.to_csv(args.test_output_csv)

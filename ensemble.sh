@@ -48,9 +48,14 @@ python3 src/preprocess_olid.py \
 python3 src/ensemble.py \
 	--val_data data/clean_val_greek.tsv \
     --test_data data/clean_all_test_greek.tsv \
-	--configs configs/finetune_xlmr_large_final.json configs/finetune_xlmr_large_final.json \
+	--configs configs/finetune_xlmr_large_final.json configs/finetune_xlmr_large_final.json configs/finetune_xlmr_large_final.json \
 	--models models/finetune_xlmr_large_final_greek models/finetune_xlmr_large_2_hybrid \
-	--val_output_csv outputs/D4/adaptation/ensemble/D4_greek_preds.csv
+	--test_output_csv outputs/D4/adaptation/evaltest/D4_greek_preds.csv
+
+# Evaluation script (Greek)
+python3 src/eval.py \
+    --val_output_csv outputs/D4/adaptation/evaltest/D4_greek_preds.csv \
+    --output_path results/D4/adaptation/evaltest/D4_scores.out
 
 # Run finetuned model predictions on test data and generate output (ENGLISH)
 python3 src/ensemble.py \
@@ -58,4 +63,9 @@ python3 src/ensemble.py \
     --test_data data/clean_all_test_english.tsv \
 	--configs configs/finetune_roberta.json configs/finetune_xlmr.json configs/finetune_xlmr_large_final.json \
 	--models models/finetune_roberta models/finetune_xlmr_english models/finetune_xlmr_large_2_english \
-	--val_output_csv outputs/D4/adaptation/ensemble/D4_english_preds.csv
+	--test_output_csv outputs/D4/primary2020/evaltest/D4_english_preds.csv
+
+# Evaluation script (English)
+python3 src/eval.py \
+    --val_output_csv outputs/D4/primary2020/evaltest/D4_english_preds.csv \
+    --output_path results/D4/primary2020/evaltest/D4_scores.out
